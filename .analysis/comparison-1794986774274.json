@@ -1,0 +1,430 @@
+{
+  "old": {
+    "session": {
+      "id": "cpi-mwlq0qdp-f46xwpz",
+      "startedAt": "2026-11-18T06:08:58.765Z",
+      "endedAt": "2026-11-18T06:26:04.790Z",
+      "engine": "3.8.3",
+      "platform": "MOBILE_BROWSER"
+    },
+    "all": {
+      "window": [
+        0,
+        1027
+      ],
+      "samples": 1023,
+      "valid": 1022,
+      "fps": 50.666,
+      "p95IntervalMedian": 23.45,
+      "slowFrames": 691,
+      "long50": 424,
+      "long100": 383,
+      "maxFrameMs": 2603.7,
+      "heapMiB": {
+        "first": 157.386,
+        "last": 3844.489,
+        "min": 57.237,
+        "max": 3915.224
+      },
+      "listeners": {
+        "first": 25,
+        "last": 873,
+        "min": 25,
+        "max": 1798
+      }
+    },
+    "steady": {
+      "window": [
+        60,
+        1027
+      ],
+      "samples": 964,
+      "valid": 964,
+      "fps": 51.484,
+      "p95IntervalMedian": 22.7,
+      "slowFrames": 525,
+      "long50": 393,
+      "long100": 357,
+      "maxFrameMs": 2603.7,
+      "heapMiB": {
+        "first": 104.262,
+        "last": 3844.489,
+        "min": 101.266,
+        "max": 3915.224
+      },
+      "listeners": {
+        "first": 865,
+        "last": 873,
+        "min": 705,
+        "max": 1798
+      }
+    },
+    "common": {
+      "window": [
+        60,
+        828
+      ],
+      "samples": 765,
+      "valid": 765,
+      "fps": 51.968,
+      "p95IntervalMedian": 22.2,
+      "slowFrames": 371,
+      "long50": 304,
+      "long100": 277,
+      "maxFrameMs": 2603.7,
+      "heapMiB": {
+        "first": 104.262,
+        "last": 3081.123,
+        "min": 101.266,
+        "max": 3081.123
+      },
+      "listeners": {
+        "first": 865,
+        "last": 889,
+        "min": 705,
+        "max": 1798
+      }
+    }
+  },
+  "cur": {
+    "session": {
+      "id": "cpi-mwlsabiu-cj14yz3",
+      "startedAt": "2026-11-18T07:12:25.302Z",
+      "endedAt": "2026-11-18T07:26:13.319Z",
+      "engine": "3.8.3",
+      "platform": "MOBILE_BROWSER"
+    },
+    "all": {
+      "window": [
+        0,
+        829
+      ],
+      "samples": 828,
+      "valid": 827,
+      "fps": 56.599,
+      "p95IntervalMedian": 21.8,
+      "slowFrames": 194,
+      "long50": 54,
+      "long100": 25,
+      "maxFrameMs": 330,
+      "heapMiB": {
+        "first": 101.926,
+        "last": 120.912,
+        "min": 55.242,
+        "max": 138.01
+      },
+      "listeners": {
+        "first": 25,
+        "last": 868,
+        "min": 25,
+        "max": 1882
+      }
+    },
+    "steady": {
+      "window": [
+        60,
+        829
+      ],
+      "samples": 769,
+      "valid": 769,
+      "fps": 58.122,
+      "p95IntervalMedian": 21,
+      "slowFrames": 30,
+      "long50": 25,
+      "long100": 0,
+      "maxFrameMs": 75.3,
+      "heapMiB": {
+        "first": 102.55,
+        "last": 120.912,
+        "min": 90.173,
+        "max": 138.01
+      },
+      "listeners": {
+        "first": 736,
+        "last": 868,
+        "min": 708,
+        "max": 1882
+      }
+    },
+    "common": {
+      "window": [
+        60,
+        828
+      ],
+      "samples": 768,
+      "valid": 768,
+      "fps": 58.12,
+      "p95IntervalMedian": 21,
+      "slowFrames": 30,
+      "long50": 25,
+      "long100": 0,
+      "maxFrameMs": 75.3,
+      "heapMiB": {
+        "first": 102.55,
+        "last": 111.762,
+        "min": 90.173,
+        "max": 138.01
+      },
+      "listeners": {
+        "first": 736,
+        "last": 868,
+        "min": 708,
+        "max": 1882
+      }
+    },
+    "segments": [
+      {
+        "window": [
+          0,
+          60
+        ],
+        "samples": 59,
+        "valid": 58,
+        "fps": 36.401,
+        "p95IntervalMedian": 34.7,
+        "slowFrames": 164,
+        "long50": 29,
+        "long100": 25,
+        "maxFrameMs": 330,
+        "heapMiB": {
+          "first": 101.926,
+          "last": 93.971,
+          "min": 55.242,
+          "max": 131.928
+        },
+        "listeners": {
+          "first": 25,
+          "last": 860,
+          "min": 25,
+          "max": 1013
+        }
+      },
+      {
+        "window": [
+          60,
+          180
+        ],
+        "samples": 120,
+        "valid": 120,
+        "fps": 58.464,
+        "p95IntervalMedian": 20.85,
+        "slowFrames": 3,
+        "long50": 2,
+        "long100": 0,
+        "maxFrameMs": 56.7,
+        "heapMiB": {
+          "first": 102.55,
+          "last": 105.794,
+          "min": 90.173,
+          "max": 129.101
+        },
+        "listeners": {
+          "first": 736,
+          "last": 808,
+          "min": 710,
+          "max": 889
+        }
+      },
+      {
+        "window": [
+          180,
+          360
+        ],
+        "samples": 180,
+        "valid": 180,
+        "fps": 58.159,
+        "p95IntervalMedian": 20.8,
+        "slowFrames": 6,
+        "long50": 5,
+        "long100": 0,
+        "maxFrameMs": 62.2,
+        "heapMiB": {
+          "first": 117.452,
+          "last": 109.45,
+          "min": 91.544,
+          "max": 135.254
+        },
+        "listeners": {
+          "first": 886,
+          "last": 858,
+          "min": 708,
+          "max": 1231
+        }
+      },
+      {
+        "window": [
+          360,
+          600
+        ],
+        "samples": 240,
+        "valid": 240,
+        "fps": 58.281,
+        "p95IntervalMedian": 20.6,
+        "slowFrames": 8,
+        "long50": 7,
+        "long100": 0,
+        "maxFrameMs": 70.6,
+        "heapMiB": {
+          "first": 117.007,
+          "last": 114.594,
+          "min": 95.295,
+          "max": 135.271
+        },
+        "listeners": {
+          "first": 721,
+          "last": 743,
+          "min": 708,
+          "max": 1882
+        }
+      },
+      {
+        "window": [
+          600,
+          829
+        ],
+        "samples": 229,
+        "valid": 229,
+        "fps": 57.748,
+        "p95IntervalMedian": 22.6,
+        "slowFrames": 13,
+        "long50": 11,
+        "long100": 0,
+        "maxFrameMs": 75.3,
+        "heapMiB": {
+          "first": 102.972,
+          "last": 120.912,
+          "min": 101.467,
+          "max": 138.01
+        },
+        "listeners": {
+          "first": 893,
+          "last": 868,
+          "min": 723,
+          "max": 951
+        }
+      }
+    ],
+    "largest": [
+      {
+        "t": 27.284,
+        "scene": "Main",
+        "fps": 4.901,
+        "p95": 330,
+        "max": 330,
+        "heapMiB": 85.818
+      },
+      {
+        "t": 35.016,
+        "scene": "GameScene",
+        "fps": 31.234,
+        "p95": 71.1,
+        "max": 323.3,
+        "heapMiB": 85.014
+      },
+      {
+        "t": 32.431,
+        "scene": "Main",
+        "fps": 5.384,
+        "p95": 230.4,
+        "max": 230.4,
+        "heapMiB": 131.928
+      },
+      {
+        "t": 30.402,
+        "scene": "Main",
+        "fps": 6.254,
+        "p95": 216.8,
+        "max": 216.8,
+        "heapMiB": 123.531
+      },
+      {
+        "t": 42.443,
+        "scene": "GameScene",
+        "fps": 25.577,
+        "p95": 123.5,
+        "max": 205,
+        "heapMiB": 115.304
+      },
+      {
+        "t": 22.442,
+        "scene": "Main",
+        "fps": 34.521,
+        "p95": 36.3,
+        "max": 203.7,
+        "heapMiB": 73.472
+      },
+      {
+        "t": 23.195,
+        "scene": "Main",
+        "fps": 5.182,
+        "p95": 202.4,
+        "max": 202.4,
+        "heapMiB": 83.821
+      },
+      {
+        "t": 31.233,
+        "scene": "Main",
+        "fps": 5.238,
+        "p95": 202.3,
+        "max": 202.3,
+        "heapMiB": 111.058
+      },
+      {
+        "t": 24.318,
+        "scene": "Main",
+        "fps": 5.232,
+        "p95": 198.4,
+        "max": 198.4,
+        "heapMiB": 67.939
+      },
+      {
+        "t": 33.272,
+        "scene": "Main",
+        "fps": 5.941,
+        "p95": 188.1,
+        "max": 188.1,
+        "heapMiB": 115.289
+      },
+      {
+        "t": 14.118,
+        "scene": "Main",
+        "fps": 8.133,
+        "p95": 185.5,
+        "max": 185.5,
+        "heapMiB": 88.459
+      },
+      {
+        "t": 15.022,
+        "scene": "Main",
+        "fps": 19.604,
+        "p95": 185.2,
+        "max": 185.2,
+        "heapMiB": 69.516
+      },
+      {
+        "t": 28.535,
+        "scene": "Main",
+        "fps": 6.216,
+        "p95": 183.5,
+        "max": 183.5,
+        "heapMiB": 113.474
+      },
+      {
+        "t": 26.45,
+        "scene": "Main",
+        "fps": 6.286,
+        "p95": 183,
+        "max": 183,
+        "heapMiB": 103.655
+      },
+      {
+        "t": 25.451,
+        "scene": "Main",
+        "fps": 6.745,
+        "p95": 173.6,
+        "max": 173.6,
+        "heapMiB": 86.803
+      }
+    ]
+  }
+}

@@ -1,0 +1,2647 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'"><title>性能监控与内存分析报告</title><style>
+    *{box-sizing:border-box}body{margin:0;background:#eef2f4;color:#18313d;font:14px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif}main{max-width:1180px;margin:auto;padding:36px 28px 70px}header{background:#123440;color:#f4fafb;padding:32px;border-radius:18px;margin-bottom:22px;border-top:5px solid #48ccb1}h1{font-size:28px;line-height:1.35;margin:8px 0 16px;letter-spacing:.02em}h2{font-size:20px;margin:0 0 18px}h3{font-size:15px;margin:24px 0 10px}p{margin:8px 0 14px}.eyebrow{font-size:11px;letter-spacing:.18em;color:#8be2ce;font-weight:700}.meta{color:#c4d5db;overflow-wrap:anywhere}.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px}.metric,section{background:white;border:1px solid #dce4e8;border-radius:14px}.metric{padding:20px}.metric .label{color:#5b6f79;font-size:12px}.metric .value{font-size:27px;font-weight:650;line-height:1.7}.metric .unit{font-size:13px;color:#73838b}section{padding:26px;margin-bottom:20px}.small{font-size:12px;color:#647983}.mono{font:12px/1.6 Consolas,monospace;overflow-wrap:anywhere}.tag{font-size:11px;display:inline-block;background:#e7f3f1;color:#236252;border-radius:4px;padding:2px 7px;margin:0 6px 4px 0}.warning{background:#fff2d7;color:#986107}.critical{background:#fce7e7;color:#ad2c38}.finding{border-left:4px solid #67ac9f;background:#f4f9f8;padding:16px 20px;margin:12px 0;border-radius:0 10px 10px 0}.finding.warning{border-color:#e2a635;background:#fffaf0;color:#18313d}.finding.critical{border-color:#d55768;background:#fff4f4;color:#18313d}.finding h3{margin:0 0 8px}.finding p{margin:6px 0}.empty{padding:20px;background:#f5f8f9;color:#647983;border-radius:9px}.notice{background:#e8f3f1;border-radius:10px;padding:16px 20px;color:#2b6258;margin:18px 0}.growth{color:#b2720e;font-weight:700}table{width:100%;border-collapse:collapse;text-align:left;font-size:12px}th{color:#617681;background:#f1f5f6;font-weight:600}td,th{border-bottom:1px solid #e1e8eb;padding:11px 12px;vertical-align:top;overflow-wrap:anywhere}td{max-width:360px}.scroll{overflow:auto;max-height:640px}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f3f6f7;padding:14px;border-radius:7px;font:11px/1.6 Consolas,monospace;max-height:500px;overflow:auto}summary{cursor:pointer;color:#247563;margin:7px 0}svg{width:100%;height:auto;display:block}svg text{fill:#73838b;font:12px sans-serif}.twocol{display:grid;grid-template-columns:1fr 1fr;gap:24px}.footer{text-align:center;color:#788b94;font-size:12px;padding-top:18px}a{color:#247563}@media(max-width:800px){main{padding:16px}.metrics{grid-template-columns:repeat(2,1fr)}.twocol{grid-template-columns:1fr}section{padding:18px}header{padding:24px}h1{font-size:24px}}@media print{body{background:white}main{max-width:none;padding:0}section,.metric{break-inside:avoid}.scroll{max-height:none}header{-webkit-print-color-adjust:exact;print-color-adjust:exact}.raw{display:none}}
+    </style></head><body><main><header><div class="eyebrow">COCOS PERFORMANCE INSPECTOR · REPORT V1</div><h1>性能监控与内存分析报告</h1><div class="meta">Cocos Creator 3.8.x（合成演示） · 演示数据 · 非真实采集<br>会话 演示数据-demo-session-v1<br>2026-11-13T08:00:00.000Z → 2026-11-13T08:01:00.000Z</div></header>
+    <div class="metrics"><div class="metric"><div class="label">平均采样帧率</div><div class="value">43.6 <span class="unit">FPS</span></div><div class="small">61 个区间 · 60.0 秒</div></div><div class="metric"><div class="label">最新可用 JS 堆</div><div class="value">97.0 <span class="unit">MiB</span></div><div class="small">首尾变化 +33.0 MiB</div></div><div class="metric"><div class="label">最新场景 Node / Component</div><div class="value">17 / 17</div><div class="small">演示大厅（合成数据）</div></div><div class="metric"><div class="label">诊断线索</div><div class="value">9</div><div class="small">4 份快照 · 7 条资源事件</div></div></div>
+    <section><h2>诊断结果</h2><p class="notice">本报告提供性能异常和对象泄漏嫌疑的观察线索。内存增长、缓存驻留或对象数量增长均不能单独证明泄漏；需要结合相同业务生命周期、GC 后快照与保留路径确认。</p><article class="finding warning"><h3><span class="tag warning">需排查</span>检测到持续低帧率</h3><p>20.0–60.0 秒的 41 个连续采样均低于 45 FPS，平均 36.0 FPS。</p><p class="small">建议：复现同一操作并检查 CPU 时间、Draw Call 和资源加载记录；后台页或主动限帧也可能降低 FPS。</p></article><article class="finding warning"><h3><span class="tag warning">需排查</span>检测到长帧</h3><p>6 个采样区间出现至少 50 ms 的长帧，最长 110.0 ms；记录到 12 个慢帧。</p><p class="small">建议：对照长帧时间点复现资源加载、实例化、布局或大量销毁操作。启动、切场景与后台恢复产生的长帧需要单独判断。</p></article><article class="finding warning"><h3><span class="tag warning">需排查</span>JS 堆内存持续增长嫌疑</h3><p>最近 30 个有效采样覆盖 29.0 秒，四段中位数持续上升，首尾增加 12.0 MiB，线性趋势 33.0 MiB/分钟。</p><p class="small">建议：在相同场景反复进入/退出同一功能，静置后再次比较快照，并使用浏览器 Heap Snapshot 检查保留路径。缓存预热与 GC 时机也会造成增长；此结果不能证明内存泄漏。</p></article><article class="finding info"><h3><span class="tag info">观察</span>同场景快照对象数量净增长</h3><p>“演示：稳定基线” → “演示：第 3 轮返回大厅”：Node +12，Component +12，Tween +1，监听器 +3。</p><p class="small">建议：确认两次快照位于相同业务状态、完成销毁与异步回调后采集。重复相同生命周期仍持续增长时，按对象 ID、节点路径和注册堆栈排查；单次增长可能是正常业务。</p><details><summary>关联对象 / 资源 ID（28）</summary><pre>demo-node:5
+demo-component:5
+demo-node:6
+demo-component:6
+demo-node:7
+demo-component:7
+demo-node:8
+demo-component:8
+demo-node:9
+demo-component:9
+demo-node:10
+demo-component:10
+demo-node:11
+demo-component:11
+demo-node:12
+demo-component:12
+demo-node:13
+demo-component:13
+demo-node:14
+demo-component:14
+demo-node:15
+demo-component:15
+demo-node:16
+demo-component:16
+demo-tween:1
+demo-listener:3
+demo-listener:4
+demo-listener:5</pre></details></article><article class="finding info"><h3><span class="tag info">观察</span>资源缓存增长且仍有引用</h3><p>相同场景资源数净增 6，3 个跨快照缓存资源的 refCount &gt; 0。</p><p class="small">建议：对照资源 UUID、addRef/decRef 与 release 请求检查持有者。缓存存在或 refCount &gt; 0 本身不代表泄漏，release 请求也不等于物理内存立即释放。</p><details><summary>关联对象 / 资源 ID（3）</summary><pre>demo-asset:0
+demo-asset:1
+demo-asset:2</pre></details></article><article class="finding warning"><h3><span class="tag warning">需排查</span>已销毁目标仍有关联记录</h3><p>最近快照发现 4 个关联已销毁目标的 Tween 或监听器记录。示例：DemoLobby/Canvas/ClosedPopup；DemoLobby/ClosedPopup1；DemoLobby/ClosedPopup2。</p><p class="small">建议：检查 onDestroy 中的事件解绑、Tween.stop/stopAllByTarget 和跨场景对象持有。该记录表示采集器观察到的关联，需要结合注册堆栈与业务生命周期确认。</p><details><summary>关联对象 / 资源 ID（4）</summary><pre>demo-tween:1
+demo-listener:3
+demo-listener:4
+demo-listener:5</pre></details></article><article class="finding info"><h3><span class="tag info">观察</span>存在长期活动的 Tween / 监听器</h3><p>4 个活动记录已超过 30.0 秒。长期运行的动画和全局事件可能是正常行为。</p><p class="small">建议：优先检查临时界面注册的监听器和循环 Tween；全局系统或常驻节点的长期记录可作为正常基线。</p><details><summary>关联对象 / 资源 ID（4）</summary><pre>demo-tween:0
+demo-listener:0
+demo-listener:1
+demo-listener:2</pre></details></article><article class="finding warning"><h3><span class="tag warning">需排查</span>资源加载错误</h3><p>捕获 1 次加载错误。示例：演示 assets/popup/MissingIcon。</p><p class="small">建议：检查路径、Bundle 生命周期和回调错误；查看事件详情及可选调用堆栈。</p></article><article class="finding info"><h3><span class="tag info">观察</span>资源加载耗时较高</h3><p>2 次加载调用耗时至少 500 ms；最长 810.0 ms。</p><p class="small">建议：区分网络下载、缓存命中与解析/实例化耗时。可按资源标识定位调用栈；加载回调耗时不是 GPU 或物理内存分配量。</p></article></section>
+    <section><h2>帧率与内存趋势</h2><div class="twocol"><div><h3>帧率</h3><svg viewBox="0 0 920 230" role="img" aria-label="FPS 随会话时间变化的曲线"><line x1="56" y1="190" x2="886" y2="190" stroke="#dce4e8"/><text x="46" y="194" text-anchor="end">0</text><line x1="56" y1="110" x2="886" y2="110" stroke="#dce4e8"/><text x="46" y="114" text-anchor="end">33</text><line x1="56" y1="30" x2="886" y2="30" stroke="#dce4e8"/><text x="46" y="34" text-anchor="end">67</text><polyline fill="none" stroke="#219d87" stroke-width="2.5" stroke-linejoin="round" points="56.00,48.34 69.83,47.74 83.67,47.14 97.50,48.34 111.33,47.74 125.17,47.14 139.00,48.34 152.83,47.74 166.67,47.14 180.50,48.34 194.33,47.74 208.17,47.14 222.00,48.34 235.83,47.74 249.67,47.14 263.50,48.34 277.33,47.74 291.17,47.14 305.00,48.34 318.83,47.74 332.67,108.37 346.50,105.97 360.33,103.57 374.17,101.16 388.00,98.76 401.83,108.37 415.67,105.97 429.50,103.57 443.33,101.16 457.17,98.76 471.00,108.37 484.83,105.97 498.67,103.57 512.50,101.16 526.33,98.76 540.17,108.37 554.00,105.97 567.83,103.57 581.67,101.16 595.50,98.76 609.33,108.37 623.17,105.97 637.00,103.57 650.83,101.16 664.67,98.76 678.50,108.37 692.33,105.97 706.17,103.57 720.00,101.16 733.83,98.76 747.67,108.37 761.50,105.97 775.33,103.57 789.17,101.16 803.00,98.76 816.83,108.37 830.67,105.97 844.50,103.57 858.33,101.16 872.17,98.76 886.00,108.37"/><text x="56" y="219">0.0 秒</text><text x="886" y="219" text-anchor="end">60.0 秒</text><text x="56" y="17">FPS</text></svg><p class="small">按会话时间展示，最多抽样 500 个点；中断部分表示指标不可用。</p></div><div><h3>JS 堆内存</h3><svg viewBox="0 0 920 230" role="img" aria-label="MiB 随会话时间变化的曲线"><line x1="56" y1="190" x2="886" y2="190" stroke="#dce4e8"/><text x="46" y="194" text-anchor="end">0</text><line x1="56" y1="110" x2="886" y2="110" stroke="#dce4e8"/><text x="46" y="114" text-anchor="end">54</text><line x1="56" y1="30" x2="886" y2="30" stroke="#dce4e8"/><text x="46" y="34" text-anchor="end">109</text><polyline fill="none" stroke="#5486c7" stroke-width="2.5" stroke-linejoin="round" points="56.00,95.74 69.83,94.87 83.67,94.01 97.50,93.14 111.33,92.50 125.17,91.63 139.00,90.77 152.83,89.90 166.67,89.26 180.50,88.39 194.33,87.53 208.17,86.66 222.00,86.02 235.83,85.15 249.67,84.29 263.50,83.42 277.33,82.78 291.17,81.91 305.00,81.05 318.83,80.18 332.67,79.54 346.50,78.67 360.33,77.81 374.17,76.94 388.00,76.30 401.83,75.43 415.67,74.57 429.50,73.70 443.33,73.06 457.17,72.19 471.00,71.33 484.83,70.46 498.67,69.82 512.50,68.95 526.33,68.09 540.17,67.22 554.00,66.58 567.83,65.71 581.67,64.85 595.50,63.98 609.33,63.34 623.17,62.47 637.00,61.61 650.83,60.74 664.67,60.10 678.50,59.23 692.33,58.37 706.17,57.50 720.00,56.86 733.83,55.99 747.67,55.13 761.50,54.26 775.33,53.62 789.17,52.75 803.00,51.89 816.83,51.02 830.67,50.38 844.50,49.51 858.33,48.65 872.17,47.78 886.00,47.14"/><text x="56" y="219">0.0 秒</text><text x="886" y="219" text-anchor="end">60.0 秒</text><text x="56" y="17">MiB</text></svg><p class="small">按会话时间展示，最多抽样 500 个点；中断部分表示指标不可用。</p></div></div><p class="small">JS 堆不包含全部原生、纹理或 GPU 内存；不同平台与浏览器的可用指标不同。区间帧时间来自实际采集帧间隔。</p></section>
+    <section><h2>快照比较与对象定位</h2><p><strong>演示：稳定基线</strong> (1.0 s) → <strong>演示：第 3 轮返回大厅</strong> (60.0 s)</p>
+        <p class="small">两次快照来自相同场景；仍需确认业务状态一致。</p>
+        <table><thead><tr><th>指标</th><th>基线</th><th>最新</th><th>净变化</th></tr></thead><tbody><tr><td>Node</td><td>5</td><td>17</td><td class="growth">+12</td></tr><tr><td>Component</td><td>5</td><td>17</td><td class="growth">+12</td></tr><tr><td>资源</td><td>3</td><td>9</td><td class="growth">+6</td></tr><tr><td>Tween</td><td>1</td><td>2</td><td class="growth">+1</td></tr><tr><td>监听器</td><td>3</td><td>6</td><td class="growth">+3</td></tr></tbody></table>
+        <h3>新增对象、已销毁与长期离树记录</h3><p class="small">按稳定 ID 比较；28 条新增、0 条移除。以下最多展示 150 条，完整明细见原始数据。</p>
+        <div class="scroll"><table><thead><tr><th>类别</th><th>对象 / 路径</th><th>首次观察</th><th>线索</th></tr></thead><tbody><tr><td><span class="tag">node</span></td><td><strong>弹窗残留节点 1</strong><div class="small mono">DemoLobby/Canvas/PopupCache/Node1</div></td><td>20.0 s</td><td>演示数据：模拟同场景多轮业务后节点仍存在</td></tr><tr><td><span class="tag">component</span></td><td><strong>DemoPopupController</strong><div class="small mono">DemoLobby/Canvas/PopupCache/Node1/DemoPopupController</div></td><td>20.0 s</td><td>演示数据：并非真实游戏实例</td></tr><tr><td><span class="tag">node</span></td><td><strong>弹窗残留节点 2</strong><div class="small mono">DemoLobby/Canvas/PopupCache/Node2</div></td><td>20.0 s</td><td>演示数据：模拟同场景多轮业务后节点仍存在</td></tr><tr><td><span class="tag">component</span></td><td><strong>DemoPopupController</strong><div class="small mono">DemoLobby/Canvas/PopupCache/Node2/DemoPopupController</div></td><td>20.0 s</td><td>演示数据：并非真实游戏实例</td></tr><tr><td><span class="tag">node</span></td><td><strong>弹窗残留节点 3</strong><div class="small mono">DemoLobby/Canvas/PopupCache/Node3</div></td><td>20.0 s</td><td>演示数据：模拟同场景多轮业务后节点仍存在</td></tr><tr><td><span class="tag">component</span></td><td><strong>DemoPopupController</strong><div class="small mono">DemoLobby/Canvas/PopupCache/Node3/DemoPopupController</div></td><td>20.0 s</td><td>演示数据：并非真实游戏实例</td></tr><tr><td><span class="tag">node</span></td><td><strong>弹窗残留节点 4</strong><div class="small mono">DemoLobby/Canvas/PopupCache/Node4</div></td><td>20.0 s</td><td>演示数据：模拟同场景多轮业务后节点仍存在</td></tr><tr><td><span class="tag">component</span></td><td><strong>DemoPopupController</strong><div class="small mono">DemoLobby/Canvas/PopupCache/Node4/DemoPopupController</div></td><td>20.0 s</td><td>演示数据：并非真实游戏实例</td></tr><tr><td><span class="tag">node</span></td><td><strong>弹窗残留节点 5</strong><div class="small mono">DemoLobby/Canvas/PopupCache/Node5</div></td><td>40.0 s</td><td>演示数据：模拟同场景多轮业务后节点仍存在</td></tr><tr><td><span class="tag">component</span></td><td><strong>DemoPopupController</strong><div class="small mono">DemoLobby/Canvas/PopupCache/Node5/DemoPopupController</div></td><td>40.0 s</td><td>演示数据：并非真实游戏实例</td></tr><tr><td><span class="tag">node</span></td><td><strong>弹窗残留节点 6</strong><div class="small mono">DemoLobby/Canvas/PopupCache/Node6</div></td><td>40.0 s</td><td>演示数据：模拟同场景多轮业务后节点仍存在</td></tr><tr><td><span class="tag">component</span></td><td><strong>DemoPopupController</strong><div class="small mono">DemoLobby/Canvas/PopupCache/Node6/DemoPopupController</div></td><td>40.0 s</td><td>演示数据：并非真实游戏实例</td></tr><tr><td><span class="tag">node</span></td><td><strong>弹窗残留节点 7</strong><div class="small mono">DemoLobby/Canvas/PopupCache/Node7</div></td><td>40.0 s</td><td>演示数据：模拟同场景多轮业务后节点仍存在</td></tr><tr><td><span class="tag">component</span></td><td><strong>DemoPopupController</strong><div class="small mono">DemoLobby/Canvas/PopupCache/Node7/DemoPopupController</div></td><td>40.0 s</td><td>演示数据：并非真实游戏实例</td></tr><tr><td><span class="tag">node</span></td><td><strong>弹窗残留节点 8</strong><div class="small mono">DemoLobby/Canvas/PopupCache/Node8</div></td><td>40.0 s</td><td>演示数据：模拟同场景多轮业务后节点仍存在</td></tr><tr><td><span class="tag">component</span></td><td><strong>DemoPopupController</strong><div class="small mono">DemoLobby/Canvas/PopupCache/Node8/DemoPopupController</div></td><td>40.0 s</td><td>演示数据：并非真实游戏实例</td></tr><tr><td><span class="tag">node</span></td><td><strong>弹窗残留节点 9</strong><div class="small mono">DemoLobby/Canvas/PopupCache/Node9</div></td><td>60.0 s</td><td>演示数据：模拟同场景多轮业务后节点仍存在</td></tr><tr><td><span class="tag">component</span></td><td><strong>DemoPopupController</strong><div class="small mono">DemoLobby/Canvas/PopupCache/Node9/DemoPopupController</div></td><td>60.0 s</td><td>演示数据：并非真实游戏实例</td></tr><tr><td><span class="tag">node</span></td><td><strong>弹窗残留节点 10</strong><div class="small mono">DemoLobby/Canvas/PopupCache/Node10</div></td><td>60.0 s</td><td>演示数据：模拟同场景多轮业务后节点仍存在</td></tr><tr><td><span class="tag">component</span></td><td><strong>DemoPopupController</strong><div class="small mono">DemoLobby/Canvas/PopupCache/Node10/DemoPopupController</div></td><td>60.0 s</td><td>演示数据：并非真实游戏实例</td></tr><tr><td><span class="tag">node</span></td><td><strong>弹窗残留节点 11</strong><div class="small mono">DemoLobby/Canvas/PopupCache/Node11</div></td><td>60.0 s</td><td>演示数据：模拟同场景多轮业务后节点仍存在</td></tr><tr><td><span class="tag">component</span></td><td><strong>DemoPopupController</strong><div class="small mono">DemoLobby/Canvas/PopupCache/Node11/DemoPopupController</div></td><td>60.0 s</td><td>演示数据：并非真实游戏实例</td></tr><tr><td><span class="tag">node</span></td><td><strong>弹窗残留节点 12</strong><div class="small mono">DemoLobby/Canvas/PopupCache/Node12</div></td><td>60.0 s</td><td>演示数据：模拟同场景多轮业务后节点仍存在</td></tr><tr><td><span class="tag">component</span></td><td><strong>DemoPopupController</strong><div class="small mono">DemoLobby/Canvas/PopupCache/Node12/DemoPopupController</div></td><td>60.0 s</td><td>演示数据：并非真实游戏实例</td></tr><tr><td><span class="tag">tween</span><span class="tag warning">目标已销毁</span></td><td><strong>弹窗关闭后残留的循环 Tween</strong><div class="small mono">DemoLobby/Canvas/ClosedPopup</div></td><td>20.0 s</td><td>演示数据：模拟已销毁目标仍有关联记录<details><summary>调用堆栈</summary><pre>演示调用栈（合成）
+  at DemoPopup.open (DemoPopup.ts:24)
+  at DemoLobby.showPopup (DemoLobby.ts:42)</pre></details></td></tr><tr><td><span class="tag">listener</span><span class="tag warning">目标已销毁</span></td><td><strong>关闭弹窗遗留的 changed 监听器</strong><div class="small mono">DemoLobby/ClosedPopup1</div></td><td>20.0 s</td><td>演示数据：模拟未解绑已销毁 target<details><summary>调用堆栈</summary><pre>演示调用栈（合成）
+  at DemoPopup.onEnable (DemoPopup.ts:18)</pre></details></td></tr><tr><td><span class="tag">listener</span><span class="tag warning">目标已销毁</span></td><td><strong>关闭弹窗遗留的 changed 监听器</strong><div class="small mono">DemoLobby/ClosedPopup2</div></td><td>40.0 s</td><td>演示数据：模拟未解绑已销毁 target<details><summary>调用堆栈</summary><pre>演示调用栈（合成）
+  at DemoPopup.onEnable (DemoPopup.ts:18)</pre></details></td></tr><tr><td><span class="tag">listener</span><span class="tag warning">目标已销毁</span></td><td><strong>关闭弹窗遗留的 changed 监听器</strong><div class="small mono">DemoLobby/ClosedPopup3</div></td><td>60.0 s</td><td>演示数据：模拟未解绑已销毁 target<details><summary>调用堆栈</summary><pre>演示调用栈（合成）
+  at DemoPopup.onEnable (DemoPopup.ts:18)</pre></details></td></tr></tbody></table></div>
+        <h3>新增缓存资源</h3><p class="small">6 条新增、0 条移除；最多展示 100 条。</p>
+        <table><thead><tr><th>资源</th><th>类型</th><th>refCount</th><th>UUID / ID</th></tr></thead><tbody><tr><td>弹窗纹理 1</td><td>Texture2D</td><td>2</td><td class="mono">demo-asset:3</td></tr><tr><td>弹窗纹理 2</td><td>Prefab</td><td>2</td><td class="mono">demo-asset:4</td></tr><tr><td>弹窗纹理 3</td><td>Texture2D</td><td>2</td><td class="mono">demo-asset:5</td></tr><tr><td>弹窗纹理 4</td><td>Prefab</td><td>2</td><td class="mono">demo-asset:6</td></tr><tr><td>弹窗纹理 5</td><td>Texture2D</td><td>2</td><td class="mono">demo-asset:7</td></tr><tr><td>弹窗纹理 6</td><td>Prefab</td><td>2</td><td class="mono">demo-asset:8</td></tr></tbody></table><details><summary>全部快照时间线（4）</summary><table><thead><tr><th>时间</th><th>标记</th><th>场景</th><th>Node / Component / 资源</th></tr></thead><tbody><tr><td>1.0 s</td><td>演示：稳定基线</td><td>演示大厅（合成数据）</td><td>5 / 5 / 3</td></tr><tr><td>20.0 s</td><td>演示：第 1 轮返回大厅</td><td>演示大厅（合成数据）</td><td>9 / 9 / 5</td></tr><tr><td>40.0 s</td><td>演示：第 2 轮返回大厅</td><td>演示大厅（合成数据）</td><td>13 / 13 / 7</td></tr><tr><td>60.0 s</td><td>演示：第 3 轮返回大厅</td><td>演示大厅（合成数据）</td><td>17 / 17 / 9</td></tr></tbody></table></details></section>
+    <section><h2>资源加载与释放记录</h2><p class="small">最近 300 条事件。load 表示调用完成，release 表示释放请求，addRef / decRef 表示引用变更调用；这些事件不能直接换算为分配或释放的字节数。</p><div class="scroll"><table><thead><tr><th>会话时间</th><th>操作</th><th>资源标识</th><th>耗时 / 引用</th><th>详情</th></tr></thead><tbody><tr><td>10.0 s</td><td><span class="tag ">load</span></td><td class="mono">演示 assets/popup/Popup.prefab</td><td>620.0 ms</td><td>合成示例：首次加载偏慢，操作次数不等于分配次数</td></tr><tr><td>20.0 s</td><td><span class="tag ">addRef</span></td><td class="mono">demo-asset:3</td><td>—<br>refCount 2</td><td><details><summary>调用堆栈</summary><pre>演示调用栈（合成）
+  at DemoPopup.onLoad (DemoPopup.ts:12)</pre></details></td></tr><tr><td>25.0 s</td><td><span class="tag critical">error</span></td><td class="mono">演示 assets/popup/MissingIcon</td><td>14.0 ms</td><td>合成示例：模拟资源路径不存在</td></tr><tr><td>30.0 s</td><td><span class="tag ">release</span></td><td class="mono">演示 assets/popup/Popup.prefab</td><td>—</td><td>合成示例：这是释放请求，不表示物理内存已回收</td></tr><tr><td>40.0 s</td><td><span class="tag ">load</span></td><td class="mono">演示 assets/popup/Popup.prefab</td><td>810.0 ms</td><td>合成示例：模拟第二次慢加载</td></tr><tr><td>41.0 s</td><td><span class="tag ">addRef</span></td><td class="mono">demo-asset:5</td><td>—<br>refCount 2</td><td></td></tr><tr><td>50.0 s</td><td><span class="tag ">decRef</span></td><td class="mono">demo-asset:3</td><td>—<br>refCount 1</td><td></td></tr></tbody></table></div></section>
+    <section><h2>采集能力、阈值与数据完整性</h2><table><thead><tr><th>能力</th><th>状态</th><th>说明</th></tr></thead><tbody><tr><td>数据来源</td><td>不可用</td><td>所有数值、对象、调用栈均为脚本构造的演示数据，不能用于评估真实项目性能。</td></tr><tr><td>JS 堆（演示）</td><td>可用</td><td>模拟 Chromium 堆指标持续增长，不代表实际堆分配。</td></tr><tr><td>Node / Component（演示）</td><td>可用</td><td>模拟同场景多轮生命周期的对象净增长。</td></tr><tr><td>Tween / 监听器（演示）</td><td>可用</td><td>模拟已销毁目标的遗留关联，供熟悉报告界面。</td></tr><tr><td>原生进程内存</td><td>不可用</td><td>此演示与插件均不提供操作系统进程内存分析。</td></tr></tbody></table><p class="small">缓冲区丢弃 / 截断累计：采样 0，事件 0，对象明细 0，快照 0。被丢弃的数据不参与本次报告分析。</p><details><summary>本次分析配置</summary><pre>{
+  &quot;sampleIntervalMs&quot;: 1000,
+  &quot;maxSamples&quot;: 1800,
+  &quot;maxEvents&quot;: 2000,
+  &quot;maxObjects&quot;: 10000,
+  &quot;lowFps&quot;: 45,
+  &quot;slowFrameMs&quot;: 50,
+  &quot;memoryWindow&quot;: 30,
+  &quot;memoryGrowthMB&quot;: 8,
+  &quot;memorySlopeMBPerMin&quot;: 2,
+  &quot;captureStacks&quot;: true,
+  &quot;staleObjectMs&quot;: 30000
+}</pre></details><p class="small">采集器自身有开销。调用堆栈建议只在定位期间开启；停止采集后将尝试还原由采集器安装的钩子。报告仅反映本会话能够观察到的对象和调用。</p></section>
+    <section class="raw"><h2>原始报告数据</h2><p class="small">完整记录随 HTML 保存，便于离线分享及复核。折叠区域包含已转义的 JSON 文本，不执行项目内容。</p><details><summary>查看完整 JSON</summary><pre>{
+  &quot;schemaVersion&quot;: 1,
+  &quot;session&quot;: {
+    &quot;id&quot;: &quot;演示数据-demo-session-v1&quot;,
+    &quot;startedAt&quot;: &quot;2026-11-13T08:00:00.000Z&quot;,
+    &quot;endedAt&quot;: &quot;2026-11-13T08:01:00.000Z&quot;,
+    &quot;engine&quot;: &quot;3.8.x（合成演示）&quot;,
+    &quot;platform&quot;: &quot;演示数据 · 非真实采集&quot;
+  },
+  &quot;config&quot;: {
+    &quot;sampleIntervalMs&quot;: 1000,
+    &quot;maxSamples&quot;: 1800,
+    &quot;maxEvents&quot;: 2000,
+    &quot;maxObjects&quot;: 10000,
+    &quot;lowFps&quot;: 45,
+    &quot;slowFrameMs&quot;: 50,
+    &quot;memoryWindow&quot;: 30,
+    &quot;memoryGrowthMB&quot;: 8,
+    &quot;memorySlopeMBPerMin&quot;: 2,
+    &quot;captureStacks&quot;: true,
+    &quot;staleObjectMs&quot;: 30000
+  },
+  &quot;samples&quot;: [
+    {
+      &quot;nodes&quot;: 5,
+      &quot;components&quot;: 5,
+      &quot;assets&quot;: 3,
+      &quot;tweens&quot;: 1,
+      &quot;listeners&quot;: 3,
+      &quot;time&quot;: 0,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;fps&quot;: 59,
+      &quot;frameMs&quot;: 16.949152542372882,
+      &quot;p95Ms&quot;: 18,
+      &quot;maxFrameMs&quot;: 24,
+      &quot;slowFrames&quot;: 0,
+      &quot;heapBytes&quot;: 67108864,
+      &quot;drawCalls&quot;: 25,
+      &quot;textureBytes&quot;: 12582912,
+      &quot;bufferBytes&quot;: 2097152
+    },
+    {
+      &quot;nodes&quot;: 5,
+      &quot;components&quot;: 5,
+      &quot;assets&quot;: 3,
+      &quot;tweens&quot;: 1,
+      &quot;listeners&quot;: 3,
+      &quot;time&quot;: 1000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;fps&quot;: 59.25,
+      &quot;frameMs&quot;: 16.877637130801688,
+      &quot;p95Ms&quot;: 18,
+      &quot;maxFrameMs&quot;: 24,
+      &quot;slowFrames&quot;: 0,
+      &quot;heapBytes&quot;: 67727524,
+      &quot;drawCalls&quot;: 25,
+      &quot;textureBytes&quot;: 12582912,
+      &quot;bufferBytes&quot;: 2097152
+    },
+    {
+      &quot;nodes&quot;: 5,
+      &quot;components&quot;: 5,
+      &quot;assets&quot;: 3,
+      &quot;tweens&quot;: 1,
+      &quot;listeners&quot;: 3,
+      &quot;time&quot;: 2000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;fps&quot;: 59.5,
+      &quot;frameMs&quot;: 16.80672268907563,
+      &quot;p95Ms&quot;: 18,
+      &quot;maxFrameMs&quot;: 24,
+      &quot;slowFrames&quot;: 0,
+      &quot;heapBytes&quot;: 68346184,
+      &quot;drawCalls&quot;: 25,
+      &quot;textureBytes&quot;: 12582912,
+      &quot;bufferBytes&quot;: 2097152
+    },
+    {
+      &quot;nodes&quot;: 5,
+      &quot;components&quot;: 5,
+      &quot;assets&quot;: 3,
+      &quot;tweens&quot;: 1,
+      &quot;listeners&quot;: 3,
+      &quot;time&quot;: 3000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;fps&quot;: 59,
+      &quot;frameMs&quot;: 16.949152542372882,
+      &quot;p95Ms&quot;: 18,
+      &quot;maxFrameMs&quot;: 24,
+      &quot;slowFrames&quot;: 0,
+      &quot;heapBytes&quot;: 68964844,
+      &quot;drawCalls&quot;: 25,
+      &quot;textureBytes&quot;: 12582912,
+      &quot;bufferBytes&quot;: 2097152
+    },
+    {
+      &quot;nodes&quot;: 5,
+      &quot;components&quot;: 5,
+      &quot;assets&quot;: 3,
+      &quot;tweens&quot;: 1,
+      &quot;listeners&quot;: 3,
+      &quot;time&quot;: 4000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;fps&quot;: 59.25,
+      &quot;frameMs&quot;: 16.877637130801688,
+      &quot;p95Ms&quot;: 18,
+      &quot;maxFrameMs&quot;: 24,
+      &quot;slowFrames&quot;: 0,
+      &quot;heapBytes&quot;: 69415731,
+      &quot;drawCalls&quot;: 25,
+      &quot;textureBytes&quot;: 12582912,
+      &quot;bufferBytes&quot;: 2097152
+    },
+    {
+      &quot;nodes&quot;: 5,
+      &quot;components&quot;: 5,
+      &quot;assets&quot;: 3,
+      &quot;tweens&quot;: 1,
+      &quot;listeners&quot;: 3,
+      &quot;time&quot;: 5000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;fps&quot;: 59.5,
+      &quot;frameMs&quot;: 16.80672268907563,
+      &quot;p95Ms&quot;: 18,
+      &quot;maxFrameMs&quot;: 24,
+      &quot;slowFrames&quot;: 0,
+      &quot;heapBytes&quot;: 70034391,
+      &quot;drawCalls&quot;: 25,
+      &quot;textureBytes&quot;: 12582912,
+      &quot;bufferBytes&quot;: 2097152
+    },
+    {
+      &quot;nodes&quot;: 5,
+      &quot;components&quot;: 5,
+      &quot;assets&quot;: 3,
+      &quot;tweens&quot;: 1,
+      &quot;listeners&quot;: 3,
+      &quot;time&quot;: 6000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;fps&quot;: 59,
+      &quot;frameMs&quot;: 16.949152542372882,
+      &quot;p95Ms&quot;: 18,
+      &quot;maxFrameMs&quot;: 24,
+      &quot;slowFrames&quot;: 0,
+      &quot;heapBytes&quot;: 70653051,
+      &quot;drawCalls&quot;: 25,
+      &quot;textureBytes&quot;: 12582912,
+      &quot;bufferBytes&quot;: 2097152
+    },
+    {
+      &quot;nodes&quot;: 5,
+      &quot;components&quot;: 5,
+      &quot;assets&quot;: 3,
+      &quot;tweens&quot;: 1,
+      &quot;listeners&quot;: 3,
+      &quot;time&quot;: 7000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;fps&quot;: 59.25,
+      &quot;frameMs&quot;: 16.877637130801688,
+      &quot;p95Ms&quot;: 18,
+      &quot;maxFrameMs&quot;: 24,
+      &quot;slowFrames&quot;: 0,
+      &quot;heapBytes&quot;: 71271711,
+      &quot;drawCalls&quot;: 25,
+      &quot;textureBytes&quot;: 12582912,
+      &quot;bufferBytes&quot;: 2097152
+    },
+    {
+      &quot;nodes&quot;: 5,
+      &quot;components&quot;: 5,
+      &quot;assets&quot;: 3,
+      &quot;tweens&quot;: 1,
+      &quot;listeners&quot;: 3,
+      &quot;time&quot;: 8000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;fps&quot;: 59.5,
+      &quot;frameMs&quot;: 16.80672268907563,
+      &quot;p95Ms&quot;: 18,
+      &quot;maxFrameMs&quot;: 24,
+      &quot;slowFrames&quot;: 0,
+      &quot;heapBytes&quot;: 71722598,
+      &quot;drawCalls&quot;: 25,
+      &quot;textureBytes&quot;: 12582912,
+      &quot;bufferBytes&quot;: 2097152
+    },
+    {
+      &quot;nodes&quot;: 5,
+      &quot;components&quot;: 5,
+      &quot;assets&quot;: 3,
+      &quot;tweens&quot;: 1,
+      &quot;listeners&quot;: 3,
+      &quot;time&quot;: 9000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;fps&quot;: 59,
+      &quot;frameMs&quot;: 16.949152542372882,
+      &quot;p95Ms&quot;: 18,
+      &quot;maxFrameMs&quot;: 24,
+      &quot;slowFrames&quot;: 0,
+      &quot;heapBytes&quot;: 72341258,
+      &quot;drawCalls&quot;: 25,
+      &quot;textureBytes&quot;: 12582912,
+      &quot;bufferBytes&quot;: 2097152
+    },
+    {
+      &quot;nodes&quot;: 5,
+      &quot;components&quot;: 5,
+      &quot;assets&quot;: 3,
+      &quot;tweens&quot;: 1,
+      &quot;listeners&quot;: 3,
+      &quot;time&quot;: 10000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;fps&quot;: 59.25,
+      &quot;frameMs&quot;: 16.877637130801688,
+      &quot;p95Ms&quot;: 18,
+      &quot;maxFrameMs&quot;: 110,
+      &quot;slowFrames&quot;: 2,
+      &quot;heapBytes&quot;: 72959918,
+      &quot;drawCalls&quot;: 25,
+      &quot;textureBytes&quot;: 12582912,
+      &quot;bufferBytes&quot;: 2097152
+    },
+    {
+      &quot;nodes&quot;: 5,
+      &quot;components&quot;: 5,
+      &quot;assets&quot;: 3,
+      &quot;tweens&quot;: 1,
+      &quot;listeners&quot;: 3,
+      &quot;time&quot;: 11000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;fps&quot;: 59.5,
+      &quot;frameMs&quot;: 16.80672268907563,
+      &quot;p95Ms&quot;: 18,
+      &quot;maxFrameMs&quot;: 24,
+      &quot;slowFrames&quot;: 0,
+      &quot;heapBytes&quot;: 73578578,
+      &quot;drawCalls&quot;: 25,
+      &quot;textureBytes&quot;: 12582912,
+      &quot;bufferBytes&quot;: 2097152
+    },
+    {
+      &quot;nodes&quot;: 5,
+      &quot;components&quot;: 5,
+      &quot;assets&quot;: 3,
+      &quot;tweens&quot;: 1,
+      &quot;listeners&quot;: 3,
+      &quot;time&quot;: 12000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;fps&quot;: 59,
+      &quot;frameMs&quot;: 16.949152542372882,
+      &quot;p95Ms&quot;: 18,
+      &quot;maxFrameMs&quot;: 24,
+      &quot;slowFrames&quot;: 0,
+      &quot;heapBytes&quot;: 74029466,
+      &quot;drawCalls&quot;: 25,
+      &quot;textureBytes&quot;: 12582912,
+      &quot;bufferBytes&quot;: 2097152
+    },
+    {
+      &quot;nodes&quot;: 5,
+      &quot;components&quot;: 5,
+      &quot;assets&quot;: 3,
+      &quot;tweens&quot;: 1,
+      &quot;listeners&quot;: 3,
+      &quot;time&quot;: 13000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;fps&quot;: 59.25,
+      &quot;frameMs&quot;: 16.877637130801688,
+      &quot;p95Ms&quot;: 18,
+      &quot;maxFrameMs&quot;: 24,
+      &quot;slowFrames&quot;: 0,
+      &quot;heapBytes&quot;: 74648125,
+      &quot;drawCalls&quot;: 25,
+      &quot;textureBytes&quot;: 12582912,
+      &quot;bufferBytes&quot;: 2097152
+    },
+    {
+      &quot;nodes&quot;: 5,
+      &quot;components&quot;: 5,
+      &quot;assets&quot;: 3,
+      &quot;tweens&quot;: 1,
+      &quot;listeners&quot;: 3,
+      &quot;time&quot;: 14000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;fps&quot;: 59.5,
+      &quot;frameMs&quot;: 16.80672268907563,
+      &quot;p95Ms&quot;: 18,
+      &quot;maxFrameMs&quot;: 24,
+      &quot;slowFrames&quot;: 0,
+      &quot;heapBytes&quot;: 75266785,
+      &quot;drawCalls&quot;: 25,
+      &quot;textureBytes&quot;: 12582912,
+      &quot;bufferBytes&quot;: 2097152
+    },
+    {
+      &quot;nodes&quot;: 5,
+      &quot;components&quot;: 5,
+      &quot;assets&quot;: 3,
+      &quot;tweens&quot;: 1,
+      &quot;listeners&quot;: 3,
+      &quot;time&quot;: 15000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;fps&quot;: 59,
+      &quot;frameMs&quot;: 16.949152542372882,
+      &quot;p95Ms&quot;: 18,
+      &quot;maxFrameMs&quot;: 24,
+      &quot;slowFrames&quot;: 0,
+      &quot;heapBytes&quot;: 75885445,
+      &quot;drawCalls&quot;: 25,
+      &quot;textureBytes&quot;: 12582912,
+      &quot;bufferBytes&quot;: 2097152
+    },
+    {
+      &quot;nodes&quot;: 5,
+      &quot;components&quot;: 5,
+      &quot;assets&quot;: 3,
+      &quot;tweens&quot;: 1,
+      &quot;listeners&quot;: 3,
+      &quot;time&quot;: 16000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;fps&quot;: 59.25,
+      &quot;frameMs&quot;: 16.877637130801688,
+      &quot;p95Ms&quot;: 18,
+      &quot;maxFrameMs&quot;: 24,
+      &quot;slowFrames&quot;: 0,
+      &quot;heapBytes&quot;: 76336333,
+      &quot;drawCalls&quot;: 25,
+      &quot;textureBytes&quot;: 12582912,
+      &quot;bufferBytes&quot;: 2097152
+    },
+    {
+      &quot;nodes&quot;: 5,
+      &quot;components&quot;: 5,
+      &quot;assets&quot;: 3,
+      &quot;tweens&quot;: 1,
+      &quot;listeners&quot;: 3,
+      &quot;time&quot;: 17000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;fps&quot;: 59.5,
+      &quot;frameMs&quot;: 16.80672268907563,
+      &quot;p95Ms&quot;: 18,
+      &quot;maxFrameMs&quot;: 24,
+      &quot;slowFrames&quot;: 0,
+      &quot;heapBytes&quot;: 76954993,
+      &quot;drawCalls&quot;: 25,
+      &quot;textureBytes&quot;: 12582912,
+      &quot;bufferBytes&quot;: 2097152
+    },
+    {
+      &quot;nodes&quot;: 5,
+      &quot;components&quot;: 5,
+      &quot;assets&quot;: 3,
+      &quot;tweens&quot;: 1,
+      &quot;listeners&quot;: 3,
+      &quot;time&quot;: 18000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;fps&quot;: 59,
+      &quot;frameMs&quot;: 16.949152542372882,
+      &quot;p95Ms&quot;: 18,
+      &quot;maxFrameMs&quot;: 24,
+      &quot;slowFrames&quot;: 0,
+      &quot;heapBytes&quot;: 77573652,
+      &quot;drawCalls&quot;: 25,
+      &quot;textureBytes&quot;: 12582912,
+      &quot;bufferBytes&quot;: 2097152
+    },
+    {
+      &quot;nodes&quot;: 5,
+      &quot;components&quot;: 5,
+      &quot;assets&quot;: 3,
+      &quot;tweens&quot;: 1,
+      &quot;listeners&quot;: 3,
+      &quot;time&quot;: 19000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;fps&quot;: 59.25,
+      &quot;frameMs&quot;: 16.877637130801688,
+      &quot;p95Ms&quot;: 18,
+      &quot;maxFrameMs&quot;: 24,
+      &quot;slowFrames&quot;: 0,
+      &quot;heapBytes&quot;: 78192312,
+      &quot;drawCalls&quot;: 25,
+      &quot;textureBytes&quot;: 12582912,
+      &quot;bufferBytes&quot;: 2097152
+    },
+    {
+      &quot;nodes&quot;: 9,
+      &quot;components&quot;: 9,
+      &quot;assets&quot;: 5,
+      &quot;tweens&quot;: 2,
+      &quot;listeners&quot;: 4,
+      &quot;time&quot;: 20000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;fps&quot;: 34,
+      &quot;frameMs&quot;: 29.41176470588235,
+      &quot;p95Ms&quot;: 42,
+      &quot;maxFrameMs&quot;: 110,
+      &quot;slowFrames&quot;: 2,
+      &quot;heapBytes&quot;: 78643200,
+      &quot;drawCalls&quot;: 37,
+      &quot;textureBytes&quot;: 15728640,
+      &quot;bufferBytes&quot;: 2097152
+    },
+    {
+      &quot;nodes&quot;: 9,
+      &quot;components&quot;: 9,
+      &quot;assets&quot;: 5,
+      &quot;tweens&quot;: 2,
+      &quot;listeners&quot;: 4,
+      &quot;time&quot;: 21000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;fps&quot;: 35,
+      &quot;frameMs&quot;: 28.571428571428573,
+      &quot;p95Ms&quot;: 43,
+      &quot;maxFrameMs&quot;: 47,
+      &quot;slowFrames&quot;: 0,
+      &quot;heapBytes&quot;: 79261860,
+      &quot;drawCalls&quot;: 37,
+      &quot;textureBytes&quot;: 15728640,
+      &quot;bufferBytes&quot;: 2097152
+    },
+    {
+      &quot;nodes&quot;: 9,
+      &quot;components&quot;: 9,
+      &quot;assets&quot;: 5,
+      &quot;tweens&quot;: 2,
+      &quot;listeners&quot;: 4,
+      &quot;time&quot;: 22000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;fps&quot;: 36,
+      &quot;frameMs&quot;: 27.77777777777778,
+      &quot;p95Ms&quot;: 44,
+      &quot;maxFrameMs&quot;: 47,
+      &quot;slowFrames&quot;: 0,
+      &quot;heapBytes&quot;: 79880520,
+      &quot;drawCalls&quot;: 37,
+      &quot;textureBytes&quot;: 15728640,
+      &quot;bufferBytes&quot;: 2097152
+    },
+    {
+      &quot;nodes&quot;: 9,
+      &quot;components&quot;: 9,
+      &quot;assets&quot;: 5,
+      &quot;tweens&quot;: 2,
+      &quot;listeners&quot;: 4,
+      &quot;time&quot;: 23000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;fps&quot;: 37,
+      &quot;frameMs&quot;: 27.027027027027028,
+      &quot;p95Ms&quot;: 45,
+      &quot;maxFrameMs&quot;: 47,
+      &quot;slowFrames&quot;: 0,
+      &quot;heapBytes&quot;: 80499180,
+      &quot;drawCalls&quot;: 37,
+      &quot;textureBytes&quot;: 15728640,
+      &quot;bufferBytes&quot;: 2097152
+    },
+    {
+      &quot;nodes&quot;: 9,
+      &quot;components&quot;: 9,
+      &quot;assets&quot;: 5,
+      &quot;tweens&quot;: 2,
+      &quot;listeners&quot;: 4,
+      &quot;time&quot;: 24000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;fps&quot;: 38,
+      &quot;frameMs&quot;: 26.31578947368421,
+      &quot;p95Ms&quot;: 42,
+      &quot;maxFrameMs&quot;: 47,
+      &quot;slowFrames&quot;: 0,
+      &quot;heapBytes&quot;: 80950067,
+      &quot;drawCalls&quot;: 37,
+      &quot;textureBytes&quot;: 15728640,
+      &quot;bufferBytes&quot;: 2097152
+    },
+    {
+      &quot;nodes&quot;: 9,
+      &quot;components&quot;: 9,
+      &quot;assets&quot;: 5,
+      &quot;tweens&quot;: 2,
+      &quot;listeners&quot;: 4,
+      &quot;time&quot;: 25000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;fps&quot;: 34,
+      &quot;frameMs&quot;: 29.41176470588235,
+      &quot;p95Ms&quot;: 43,
+      &quot;maxFrameMs&quot;: 47,
+      &quot;slowFrames&quot;: 0,
+      &quot;heapBytes&quot;: 81568727,
+      &quot;drawCalls&quot;: 37,
+      &quot;textureBytes&quot;: 15728640,
+      &quot;bufferBytes&quot;: 2097152
+    },
+    {
+      &quot;nodes&quot;: 9,
+      &quot;components&quot;: 9,
+      &quot;assets&quot;: 5,
+      &quot;tweens&quot;: 2,
+      &quot;listeners&quot;: 4,
+      &quot;time&quot;: 26000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;fps&quot;: 35,
+      &quot;frameMs&quot;: 28.571428571428573,
+      &quot;p95Ms&quot;: 44,
+      &quot;maxFrameMs&quot;: 47,
+      &quot;slowFrames&quot;: 0,
+      &quot;heapBytes&quot;: 82187387,
+      &quot;drawCalls&quot;: 37,
+      &quot;textureBytes&quot;: 15728640,
+      &quot;bufferBytes&quot;: 2097152
+    },
+    {
+      &quot;nodes&quot;: 9,
+      &quot;components&quot;: 9,
+      &quot;assets&quot;: 5,
+      &quot;tweens&quot;: 2,
+      &quot;listeners&quot;: 4,
+      &quot;time&quot;: 27000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;fps&quot;: 36,
+      &quot;frameMs&quot;: 27.77777777777778,
+      &quot;p95Ms&quot;: 45,
+      &quot;maxFrameMs&quot;: 47,
+      &quot;slowFrames&quot;: 0,
+      &quot;heapBytes&quot;: 82806047,
+      &quot;drawCalls&quot;: 37,
+      &quot;textureBytes&quot;: 15728640,
+      &quot;bufferBytes&quot;: 2097152
+    },
+    {
+      &quot;nodes&quot;: 9,
+      &quot;components&quot;: 9,
+      &quot;assets&quot;: 5,
+      &quot;tweens&quot;: 2,
+      &quot;listeners&quot;: 4,
+      &quot;time&quot;: 28000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;fps&quot;: 37,
+      &quot;frameMs&quot;: 27.027027027027028,
+      &quot;p95Ms&quot;: 42,
+      &quot;maxFrameMs&quot;: 47,
+      &quot;slowFrames&quot;: 0,
+      &quot;heapBytes&quot;: 83256934,
+      &quot;drawCalls&quot;: 37,
+      &quot;textureBytes&quot;: 15728640,
+      &quot;bufferBytes&quot;: 2097152
+    },
+    {
+      &quot;nodes&quot;: 9,
+      &quot;components&quot;: 9,
+      &quot;assets&quot;: 5,
+      &quot;tweens&quot;: 2,
+      &quot;listeners&quot;: 4,
+      &quot;time&quot;: 29000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;fps&quot;: 38,
+      &quot;frameMs&quot;: 26.31578947368421,
+      &quot;p95Ms&quot;: 43,
+      &quot;maxFrameMs&quot;: 47,
+      &quot;slowFrames&quot;: 0,
+      &quot;heapBytes&quot;: 83875594,
+      &quot;drawCalls&quot;: 37,
+      &quot;textureBytes&quot;: 15728640,
+      &quot;bufferBytes&quot;: 2097152
+    },
+    {
+      &quot;nodes&quot;: 9,
+      &quot;components&quot;: 9,
+      &quot;assets&quot;: 5,
+      &quot;tweens&quot;: 2,
+      &quot;listeners&quot;: 4,
+      &quot;time&quot;: 30000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;fps&quot;: 34,
+      &quot;frameMs&quot;: 29.41176470588235,
+      &quot;p95Ms&quot;: 44,
+      &quot;maxFrameMs&quot;: 110,
+      &quot;slowFrames&quot;: 2,
+      &quot;heapBytes&quot;: 84494254,
+      &quot;drawCalls&quot;: 37,
+      &quot;textureBytes&quot;: 15728640,
+      &quot;bufferBytes&quot;: 2097152
+    },
+    {
+      &quot;nodes&quot;: 9,
+      &quot;components&quot;: 9,
+      &quot;assets&quot;: 5,
+      &quot;tweens&quot;: 2,
+      &quot;listeners&quot;: 4,
+      &quot;time&quot;: 31000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;fps&quot;: 35,
+      &quot;frameMs&quot;: 28.571428571428573,
+      &quot;p95Ms&quot;: 45,
+      &quot;maxFrameMs&quot;: 47,
+      &quot;slowFrames&quot;: 0,
+      &quot;heapBytes&quot;: 85112914,
+      &quot;drawCalls&quot;: 37,
+      &quot;textureBytes&quot;: 15728640,
+      &quot;bufferBytes&quot;: 2097152
+    },
+    {
+      &quot;nodes&quot;: 9,
+      &quot;components&quot;: 9,
+      &quot;assets&quot;: 5,
+      &quot;tweens&quot;: 2,
+      &quot;listeners&quot;: 4,
+      &quot;time&quot;: 32000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;fps&quot;: 36,
+      &quot;frameMs&quot;: 27.77777777777778,
+      &quot;p95Ms&quot;: 42,
+      &quot;maxFrameMs&quot;: 47,
+      &quot;slowFrames&quot;: 0,
+      &quot;heapBytes&quot;: 85563802,
+      &quot;drawCalls&quot;: 37,
+      &quot;textureBytes&quot;: 15728640,
+      &quot;bufferBytes&quot;: 2097152
+    },
+    {
+      &quot;nodes&quot;: 9,
+      &quot;components&quot;: 9,
+      &quot;assets&quot;: 5,
+      &quot;tweens&quot;: 2,
+      &quot;listeners&quot;: 4,
+      &quot;time&quot;: 33000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;fps&quot;: 37,
+      &quot;frameMs&quot;: 27.027027027027028,
+      &quot;p95Ms&quot;: 43,
+      &quot;maxFrameMs&quot;: 47,
+      &quot;slowFrames&quot;: 0,
+      &quot;heapBytes&quot;: 86182461,
+      &quot;drawCalls&quot;: 37,
+      &quot;textureBytes&quot;: 15728640,
+      &quot;bufferBytes&quot;: 2097152
+    },
+    {
+      &quot;nodes&quot;: 9,
+      &quot;components&quot;: 9,
+      &quot;assets&quot;: 5,
+      &quot;tweens&quot;: 2,
+      &quot;listeners&quot;: 4,
+      &quot;time&quot;: 34000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;fps&quot;: 38,
+      &quot;frameMs&quot;: 26.31578947368421,
+      &quot;p95Ms&quot;: 44,
+      &quot;maxFrameMs&quot;: 47,
+      &quot;slowFrames&quot;: 0,
+      &quot;heapBytes&quot;: 86801121,
+      &quot;drawCalls&quot;: 37,
+      &quot;textureBytes&quot;: 15728640,
+      &quot;bufferBytes&quot;: 2097152
+    },
+    {
+      &quot;nodes&quot;: 9,
+      &quot;components&quot;: 9,
+      &quot;assets&quot;: 5,
+      &quot;tweens&quot;: 2,
+      &quot;listeners&quot;: 4,
+      &quot;time&quot;: 35000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;fps&quot;: 34,
+      &quot;frameMs&quot;: 29.41176470588235,
+      &quot;p95Ms&quot;: 45,
+      &quot;maxFrameMs&quot;: 47,
+      &quot;slowFrames&quot;: 0,
+      &quot;heapBytes&quot;: 87419781,
+      &quot;drawCalls&quot;: 37,
+      &quot;textureBytes&quot;: 15728640,
+      &quot;bufferBytes&quot;: 2097152
+    },
+    {
+      &quot;nodes&quot;: 9,
+      &quot;components&quot;: 9,
+      &quot;assets&quot;: 5,
+      &quot;tweens&quot;: 2,
+      &quot;listeners&quot;: 4,
+      &quot;time&quot;: 36000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;fps&quot;: 35,
+      &quot;frameMs&quot;: 28.571428571428573,
+      &quot;p95Ms&quot;: 42,
+      &quot;maxFrameMs&quot;: 47,
+      &quot;slowFrames&quot;: 0,
+      &quot;heapBytes&quot;: 87870669,
+      &quot;drawCalls&quot;: 37,
+      &quot;textureBytes&quot;: 15728640,
+      &quot;bufferBytes&quot;: 2097152
+    },
+    {
+      &quot;nodes&quot;: 9,
+      &quot;components&quot;: 9,
+      &quot;assets&quot;: 5,
+      &quot;tweens&quot;: 2,
+      &quot;listeners&quot;: 4,
+      &quot;time&quot;: 37000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;fps&quot;: 36,
+      &quot;frameMs&quot;: 27.77777777777778,
+      &quot;p95Ms&quot;: 43,
+      &quot;maxFrameMs&quot;: 47,
+      &quot;slowFrames&quot;: 0,
+      &quot;heapBytes&quot;: 88489329,
+      &quot;drawCalls&quot;: 37,
+      &quot;textureBytes&quot;: 15728640,
+      &quot;bufferBytes&quot;: 2097152
+    },
+    {
+      &quot;nodes&quot;: 9,
+      &quot;components&quot;: 9,
+      &quot;assets&quot;: 5,
+      &quot;tweens&quot;: 2,
+      &quot;listeners&quot;: 4,
+      &quot;time&quot;: 38000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;fps&quot;: 37,
+      &quot;frameMs&quot;: 27.027027027027028,
+      &quot;p95Ms&quot;: 44,
+      &quot;maxFrameMs&quot;: 47,
+      &quot;slowFrames&quot;: 0,
+      &quot;heapBytes&quot;: 89107988,
+      &quot;drawCalls&quot;: 37,
+      &quot;textureBytes&quot;: 15728640,
+      &quot;bufferBytes&quot;: 2097152
+    },
+    {
+      &quot;nodes&quot;: 9,
+      &quot;components&quot;: 9,
+      &quot;assets&quot;: 5,
+      &quot;tweens&quot;: 2,
+      &quot;listeners&quot;: 4,
+      &quot;time&quot;: 39000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;fps&quot;: 38,
+      &quot;frameMs&quot;: 26.31578947368421,
+      &quot;p95Ms&quot;: 45,
+      &quot;maxFrameMs&quot;: 47,
+      &quot;slowFrames&quot;: 0,
+      &quot;heapBytes&quot;: 89726648,
+      &quot;drawCalls&quot;: 37,
+      &quot;textureBytes&quot;: 15728640,
+      &quot;bufferBytes&quot;: 2097152
+    },
+    {
+      &quot;nodes&quot;: 13,
+      &quot;components&quot;: 13,
+      &quot;assets&quot;: 7,
+      &quot;tweens&quot;: 2,
+      &quot;listeners&quot;: 5,
+      &quot;time&quot;: 40000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;fps&quot;: 34,
+      &quot;frameMs&quot;: 29.41176470588235,
+      &quot;p95Ms&quot;: 42,
+      &quot;maxFrameMs&quot;: 110,
+      &quot;slowFrames&quot;: 2,
+      &quot;heapBytes&quot;: 90177536,
+      &quot;drawCalls&quot;: 49,
+      &quot;textureBytes&quot;: 18874368,
+      &quot;bufferBytes&quot;: 2097152
+    },
+    {
+      &quot;nodes&quot;: 13,
+      &quot;components&quot;: 13,
+      &quot;assets&quot;: 7,
+      &quot;tweens&quot;: 2,
+      &quot;listeners&quot;: 5,
+      &quot;time&quot;: 41000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;fps&quot;: 35,
+      &quot;frameMs&quot;: 28.571428571428573,
+      &quot;p95Ms&quot;: 43,
+      &quot;maxFrameMs&quot;: 47,
+      &quot;slowFrames&quot;: 0,
+      &quot;heapBytes&quot;: 90796196,
+      &quot;drawCalls&quot;: 49,
+      &quot;textureBytes&quot;: 18874368,
+      &quot;bufferBytes&quot;: 2097152
+    },
+    {
+      &quot;nodes&quot;: 13,
+      &quot;components&quot;: 13,
+      &quot;assets&quot;: 7,
+      &quot;tweens&quot;: 2,
+      &quot;listeners&quot;: 5,
+      &quot;time&quot;: 42000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;fps&quot;: 36,
+      &quot;frameMs&quot;: 27.77777777777778,
+      &quot;p95Ms&quot;: 44,
+      &quot;maxFrameMs&quot;: 47,
+      &quot;slowFrames&quot;: 0,
+      &quot;heapBytes&quot;: 91414856,
+      &quot;drawCalls&quot;: 49,
+      &quot;textureBytes&quot;: 18874368,
+      &quot;bufferBytes&quot;: 2097152
+    },
+    {
+      &quot;nodes&quot;: 13,
+      &quot;components&quot;: 13,
+      &quot;assets&quot;: 7,
+      &quot;tweens&quot;: 2,
+      &quot;listeners&quot;: 5,
+      &quot;time&quot;: 43000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;fps&quot;: 37,
+      &quot;frameMs&quot;: 27.027027027027028,
+      &quot;p95Ms&quot;: 45,
+      &quot;maxFrameMs&quot;: 47,
+      &quot;slowFrames&quot;: 0,
+      &quot;heapBytes&quot;: 92033516,
+      &quot;drawCalls&quot;: 49,
+      &quot;textureBytes&quot;: 18874368,
+      &quot;bufferBytes&quot;: 2097152
+    },
+    {
+      &quot;nodes&quot;: 13,
+      &quot;components&quot;: 13,
+      &quot;assets&quot;: 7,
+      &quot;tweens&quot;: 2,
+      &quot;listeners&quot;: 5,
+      &quot;time&quot;: 44000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;fps&quot;: 38,
+      &quot;frameMs&quot;: 26.31578947368421,
+      &quot;p95Ms&quot;: 42,
+      &quot;maxFrameMs&quot;: 47,
+      &quot;slowFrames&quot;: 0,
+      &quot;heapBytes&quot;: 92484403,
+      &quot;drawCalls&quot;: 49,
+      &quot;textureBytes&quot;: 18874368,
+      &quot;bufferBytes&quot;: 2097152
+    },
+    {
+      &quot;nodes&quot;: 13,
+      &quot;components&quot;: 13,
+      &quot;assets&quot;: 7,
+      &quot;tweens&quot;: 2,
+      &quot;listeners&quot;: 5,
+      &quot;time&quot;: 45000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;fps&quot;: 34,
+      &quot;frameMs&quot;: 29.41176470588235,
+      &quot;p95Ms&quot;: 43,
+      &quot;maxFrameMs&quot;: 47,
+      &quot;slowFrames&quot;: 0,
+      &quot;heapBytes&quot;: 93103063,
+      &quot;drawCalls&quot;: 49,
+      &quot;textureBytes&quot;: 18874368,
+      &quot;bufferBytes&quot;: 2097152
+    },
+    {
+      &quot;nodes&quot;: 13,
+      &quot;components&quot;: 13,
+      &quot;assets&quot;: 7,
+      &quot;tweens&quot;: 2,
+      &quot;listeners&quot;: 5,
+      &quot;time&quot;: 46000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;fps&quot;: 35,
+      &quot;frameMs&quot;: 28.571428571428573,
+      &quot;p95Ms&quot;: 44,
+      &quot;maxFrameMs&quot;: 47,
+      &quot;slowFrames&quot;: 0,
+      &quot;heapBytes&quot;: 93721723,
+      &quot;drawCalls&quot;: 49,
+      &quot;textureBytes&quot;: 18874368,
+      &quot;bufferBytes&quot;: 2097152
+    },
+    {
+      &quot;nodes&quot;: 13,
+      &quot;components&quot;: 13,
+      &quot;assets&quot;: 7,
+      &quot;tweens&quot;: 2,
+      &quot;listeners&quot;: 5,
+      &quot;time&quot;: 47000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;fps&quot;: 36,
+      &quot;frameMs&quot;: 27.77777777777778,
+      &quot;p95Ms&quot;: 45,
+      &quot;maxFrameMs&quot;: 47,
+      &quot;slowFrames&quot;: 0,
+      &quot;heapBytes&quot;: 94340383,
+      &quot;drawCalls&quot;: 49,
+      &quot;textureBytes&quot;: 18874368,
+      &quot;bufferBytes&quot;: 2097152
+    },
+    {
+      &quot;nodes&quot;: 13,
+      &quot;components&quot;: 13,
+      &quot;assets&quot;: 7,
+      &quot;tweens&quot;: 2,
+      &quot;listeners&quot;: 5,
+      &quot;time&quot;: 48000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;fps&quot;: 37,
+      &quot;frameMs&quot;: 27.027027027027028,
+      &quot;p95Ms&quot;: 42,
+      &quot;maxFrameMs&quot;: 47,
+      &quot;slowFrames&quot;: 0,
+      &quot;heapBytes&quot;: 94791270,
+      &quot;drawCalls&quot;: 49,
+      &quot;textureBytes&quot;: 18874368,
+      &quot;bufferBytes&quot;: 2097152
+    },
+    {
+      &quot;nodes&quot;: 13,
+      &quot;components&quot;: 13,
+      &quot;assets&quot;: 7,
+      &quot;tweens&quot;: 2,
+      &quot;listeners&quot;: 5,
+      &quot;time&quot;: 49000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;fps&quot;: 38,
+      &quot;frameMs&quot;: 26.31578947368421,
+      &quot;p95Ms&quot;: 43,
+      &quot;maxFrameMs&quot;: 47,
+      &quot;slowFrames&quot;: 0,
+      &quot;heapBytes&quot;: 95409930,
+      &quot;drawCalls&quot;: 49,
+      &quot;textureBytes&quot;: 18874368,
+      &quot;bufferBytes&quot;: 2097152
+    },
+    {
+      &quot;nodes&quot;: 13,
+      &quot;components&quot;: 13,
+      &quot;assets&quot;: 7,
+      &quot;tweens&quot;: 2,
+      &quot;listeners&quot;: 5,
+      &quot;time&quot;: 50000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;fps&quot;: 34,
+      &quot;frameMs&quot;: 29.41176470588235,
+      &quot;p95Ms&quot;: 44,
+      &quot;maxFrameMs&quot;: 110,
+      &quot;slowFrames&quot;: 2,
+      &quot;heapBytes&quot;: 96028590,
+      &quot;drawCalls&quot;: 49,
+      &quot;textureBytes&quot;: 18874368,
+      &quot;bufferBytes&quot;: 2097152
+    },
+    {
+      &quot;nodes&quot;: 13,
+      &quot;components&quot;: 13,
+      &quot;assets&quot;: 7,
+      &quot;tweens&quot;: 2,
+      &quot;listeners&quot;: 5,
+      &quot;time&quot;: 51000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;fps&quot;: 35,
+      &quot;frameMs&quot;: 28.571428571428573,
+      &quot;p95Ms&quot;: 45,
+      &quot;maxFrameMs&quot;: 47,
+      &quot;slowFrames&quot;: 0,
+      &quot;heapBytes&quot;: 96647250,
+      &quot;drawCalls&quot;: 49,
+      &quot;textureBytes&quot;: 18874368,
+      &quot;bufferBytes&quot;: 2097152
+    },
+    {
+      &quot;nodes&quot;: 13,
+      &quot;components&quot;: 13,
+      &quot;assets&quot;: 7,
+      &quot;tweens&quot;: 2,
+      &quot;listeners&quot;: 5,
+      &quot;time&quot;: 52000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;fps&quot;: 36,
+      &quot;frameMs&quot;: 27.77777777777778,
+      &quot;p95Ms&quot;: 42,
+      &quot;maxFrameMs&quot;: 47,
+      &quot;slowFrames&quot;: 0,
+      &quot;heapBytes&quot;: 97098138,
+      &quot;drawCalls&quot;: 49,
+      &quot;textureBytes&quot;: 18874368,
+      &quot;bufferBytes&quot;: 2097152
+    },
+    {
+      &quot;nodes&quot;: 13,
+      &quot;components&quot;: 13,
+      &quot;assets&quot;: 7,
+      &quot;tweens&quot;: 2,
+      &quot;listeners&quot;: 5,
+      &quot;time&quot;: 53000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;fps&quot;: 37,
+      &quot;frameMs&quot;: 27.027027027027028,
+      &quot;p95Ms&quot;: 43,
+      &quot;maxFrameMs&quot;: 47,
+      &quot;slowFrames&quot;: 0,
+      &quot;heapBytes&quot;: 97716797,
+      &quot;drawCalls&quot;: 49,
+      &quot;textureBytes&quot;: 18874368,
+      &quot;bufferBytes&quot;: 2097152
+    },
+    {
+      &quot;nodes&quot;: 13,
+      &quot;components&quot;: 13,
+      &quot;assets&quot;: 7,
+      &quot;tweens&quot;: 2,
+      &quot;listeners&quot;: 5,
+      &quot;time&quot;: 54000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;fps&quot;: 38,
+      &quot;frameMs&quot;: 26.31578947368421,
+      &quot;p95Ms&quot;: 44,
+      &quot;maxFrameMs&quot;: 47,
+      &quot;slowFrames&quot;: 0,
+      &quot;heapBytes&quot;: 98335457,
+      &quot;drawCalls&quot;: 49,
+      &quot;textureBytes&quot;: 18874368,
+      &quot;bufferBytes&quot;: 2097152
+    },
+    {
+      &quot;nodes&quot;: 13,
+      &quot;components&quot;: 13,
+      &quot;assets&quot;: 7,
+      &quot;tweens&quot;: 2,
+      &quot;listeners&quot;: 5,
+      &quot;time&quot;: 55000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;fps&quot;: 34,
+      &quot;frameMs&quot;: 29.41176470588235,
+      &quot;p95Ms&quot;: 45,
+      &quot;maxFrameMs&quot;: 47,
+      &quot;slowFrames&quot;: 0,
+      &quot;heapBytes&quot;: 98954117,
+      &quot;drawCalls&quot;: 49,
+      &quot;textureBytes&quot;: 18874368,
+      &quot;bufferBytes&quot;: 2097152
+    },
+    {
+      &quot;nodes&quot;: 13,
+      &quot;components&quot;: 13,
+      &quot;assets&quot;: 7,
+      &quot;tweens&quot;: 2,
+      &quot;listeners&quot;: 5,
+      &quot;time&quot;: 56000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;fps&quot;: 35,
+      &quot;frameMs&quot;: 28.571428571428573,
+      &quot;p95Ms&quot;: 42,
+      &quot;maxFrameMs&quot;: 47,
+      &quot;slowFrames&quot;: 0,
+      &quot;heapBytes&quot;: 99405005,
+      &quot;drawCalls&quot;: 49,
+      &quot;textureBytes&quot;: 18874368,
+      &quot;bufferBytes&quot;: 2097152
+    },
+    {
+      &quot;nodes&quot;: 13,
+      &quot;components&quot;: 13,
+      &quot;assets&quot;: 7,
+      &quot;tweens&quot;: 2,
+      &quot;listeners&quot;: 5,
+      &quot;time&quot;: 57000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;fps&quot;: 36,
+      &quot;frameMs&quot;: 27.77777777777778,
+      &quot;p95Ms&quot;: 43,
+      &quot;maxFrameMs&quot;: 47,
+      &quot;slowFrames&quot;: 0,
+      &quot;heapBytes&quot;: 100023665,
+      &quot;drawCalls&quot;: 49,
+      &quot;textureBytes&quot;: 18874368,
+      &quot;bufferBytes&quot;: 2097152
+    },
+    {
+      &quot;nodes&quot;: 13,
+      &quot;components&quot;: 13,
+      &quot;assets&quot;: 7,
+      &quot;tweens&quot;: 2,
+      &quot;listeners&quot;: 5,
+      &quot;time&quot;: 58000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;fps&quot;: 37,
+      &quot;frameMs&quot;: 27.027027027027028,
+      &quot;p95Ms&quot;: 44,
+      &quot;maxFrameMs&quot;: 47,
+      &quot;slowFrames&quot;: 0,
+      &quot;heapBytes&quot;: 100642324,
+      &quot;drawCalls&quot;: 49,
+      &quot;textureBytes&quot;: 18874368,
+      &quot;bufferBytes&quot;: 2097152
+    },
+    {
+      &quot;nodes&quot;: 13,
+      &quot;components&quot;: 13,
+      &quot;assets&quot;: 7,
+      &quot;tweens&quot;: 2,
+      &quot;listeners&quot;: 5,
+      &quot;time&quot;: 59000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;fps&quot;: 38,
+      &quot;frameMs&quot;: 26.31578947368421,
+      &quot;p95Ms&quot;: 45,
+      &quot;maxFrameMs&quot;: 47,
+      &quot;slowFrames&quot;: 0,
+      &quot;heapBytes&quot;: 101260984,
+      &quot;drawCalls&quot;: 49,
+      &quot;textureBytes&quot;: 18874368,
+      &quot;bufferBytes&quot;: 2097152
+    },
+    {
+      &quot;nodes&quot;: 17,
+      &quot;components&quot;: 17,
+      &quot;assets&quot;: 9,
+      &quot;tweens&quot;: 2,
+      &quot;listeners&quot;: 6,
+      &quot;time&quot;: 60000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;fps&quot;: 34,
+      &quot;frameMs&quot;: 29.41176470588235,
+      &quot;p95Ms&quot;: 42,
+      &quot;maxFrameMs&quot;: 110,
+      &quot;slowFrames&quot;: 2,
+      &quot;heapBytes&quot;: 101711872,
+      &quot;drawCalls&quot;: 61,
+      &quot;textureBytes&quot;: 22020096,
+      &quot;bufferBytes&quot;: 2097152
+    }
+  ],
+  &quot;snapshots&quot;: [
+    {
+      &quot;id&quot;: &quot;demo-snapshot:0&quot;,
+      &quot;label&quot;: &quot;演示：稳定基线&quot;,
+      &quot;time&quot;: 1000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;counts&quot;: {
+        &quot;nodes&quot;: 5,
+        &quot;components&quot;: 5,
+        &quot;assets&quot;: 3,
+        &quot;tweens&quot;: 1,
+        &quot;listeners&quot;: 3
+      },
+      &quot;objects&quot;: [
+        {
+          &quot;id&quot;: &quot;demo-node:0&quot;,
+          &quot;kind&quot;: &quot;node&quot;,
+          &quot;label&quot;: &quot;大厅节点 1&quot;,
+          &quot;createdAt&quot;: 0,
+          &quot;lastSeenAt&quot;: 1000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/Node1&quot;,
+          &quot;details&quot;: &quot;演示数据：模拟同场景多轮业务后节点仍存在&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-component:0&quot;,
+          &quot;kind&quot;: &quot;component&quot;,
+          &quot;label&quot;: &quot;UITransform&quot;,
+          &quot;createdAt&quot;: 0,
+          &quot;lastSeenAt&quot;: 1000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/Node1/UITransform&quot;,
+          &quot;details&quot;: &quot;演示数据：并非真实游戏实例&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-node:1&quot;,
+          &quot;kind&quot;: &quot;node&quot;,
+          &quot;label&quot;: &quot;大厅节点 2&quot;,
+          &quot;createdAt&quot;: 0,
+          &quot;lastSeenAt&quot;: 1000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/Node2&quot;,
+          &quot;details&quot;: &quot;演示数据：模拟同场景多轮业务后节点仍存在&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-component:1&quot;,
+          &quot;kind&quot;: &quot;component&quot;,
+          &quot;label&quot;: &quot;UITransform&quot;,
+          &quot;createdAt&quot;: 0,
+          &quot;lastSeenAt&quot;: 1000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/Node2/UITransform&quot;,
+          &quot;details&quot;: &quot;演示数据：并非真实游戏实例&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-node:2&quot;,
+          &quot;kind&quot;: &quot;node&quot;,
+          &quot;label&quot;: &quot;大厅节点 3&quot;,
+          &quot;createdAt&quot;: 0,
+          &quot;lastSeenAt&quot;: 1000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/Node3&quot;,
+          &quot;details&quot;: &quot;演示数据：模拟同场景多轮业务后节点仍存在&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-component:2&quot;,
+          &quot;kind&quot;: &quot;component&quot;,
+          &quot;label&quot;: &quot;UITransform&quot;,
+          &quot;createdAt&quot;: 0,
+          &quot;lastSeenAt&quot;: 1000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/Node3/UITransform&quot;,
+          &quot;details&quot;: &quot;演示数据：并非真实游戏实例&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-node:3&quot;,
+          &quot;kind&quot;: &quot;node&quot;,
+          &quot;label&quot;: &quot;大厅节点 4&quot;,
+          &quot;createdAt&quot;: 0,
+          &quot;lastSeenAt&quot;: 1000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/Node4&quot;,
+          &quot;details&quot;: &quot;演示数据：模拟同场景多轮业务后节点仍存在&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-component:3&quot;,
+          &quot;kind&quot;: &quot;component&quot;,
+          &quot;label&quot;: &quot;UITransform&quot;,
+          &quot;createdAt&quot;: 0,
+          &quot;lastSeenAt&quot;: 1000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/Node4/UITransform&quot;,
+          &quot;details&quot;: &quot;演示数据：并非真实游戏实例&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-node:4&quot;,
+          &quot;kind&quot;: &quot;node&quot;,
+          &quot;label&quot;: &quot;大厅节点 5&quot;,
+          &quot;createdAt&quot;: 0,
+          &quot;lastSeenAt&quot;: 1000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/Node5&quot;,
+          &quot;details&quot;: &quot;演示数据：模拟同场景多轮业务后节点仍存在&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-component:4&quot;,
+          &quot;kind&quot;: &quot;component&quot;,
+          &quot;label&quot;: &quot;UITransform&quot;,
+          &quot;createdAt&quot;: 0,
+          &quot;lastSeenAt&quot;: 1000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/Node5/UITransform&quot;,
+          &quot;details&quot;: &quot;演示数据：并非真实游戏实例&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-tween:0&quot;,
+          &quot;kind&quot;: &quot;tween&quot;,
+          &quot;label&quot;: &quot;背景循环动画（正常基线）&quot;,
+          &quot;createdAt&quot;: 0,
+          &quot;lastSeenAt&quot;: 1000,
+          &quot;details&quot;: &quot;演示数据：合法常驻动画&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-listener:0&quot;,
+          &quot;kind&quot;: &quot;listener&quot;,
+          &quot;label&quot;: &quot;全局监听器 1（正常基线）&quot;,
+          &quot;createdAt&quot;: 0,
+          &quot;lastSeenAt&quot;: 1000,
+          &quot;details&quot;: &quot;演示数据：正常常驻监听&quot;,
+          &quot;destroyed&quot;: false
+        },
+        {
+          &quot;id&quot;: &quot;demo-listener:1&quot;,
+          &quot;kind&quot;: &quot;listener&quot;,
+          &quot;label&quot;: &quot;全局监听器 2（正常基线）&quot;,
+          &quot;createdAt&quot;: 0,
+          &quot;lastSeenAt&quot;: 1000,
+          &quot;details&quot;: &quot;演示数据：正常常驻监听&quot;,
+          &quot;destroyed&quot;: false
+        },
+        {
+          &quot;id&quot;: &quot;demo-listener:2&quot;,
+          &quot;kind&quot;: &quot;listener&quot;,
+          &quot;label&quot;: &quot;全局监听器 3（正常基线）&quot;,
+          &quot;createdAt&quot;: 0,
+          &quot;lastSeenAt&quot;: 1000,
+          &quot;details&quot;: &quot;演示数据：正常常驻监听&quot;,
+          &quot;destroyed&quot;: false
+        }
+      ],
+      &quot;assets&quot;: [
+        {
+          &quot;id&quot;: &quot;demo-asset:0&quot;,
+          &quot;name&quot;: &quot;公共资源 1&quot;,
+          &quot;type&quot;: &quot;Prefab&quot;,
+          &quot;refCount&quot;: 1
+        },
+        {
+          &quot;id&quot;: &quot;demo-asset:1&quot;,
+          &quot;name&quot;: &quot;公共资源 2&quot;,
+          &quot;type&quot;: &quot;Texture2D&quot;,
+          &quot;refCount&quot;: 1
+        },
+        {
+          &quot;id&quot;: &quot;demo-asset:2&quot;,
+          &quot;name&quot;: &quot;公共资源 3&quot;,
+          &quot;type&quot;: &quot;Prefab&quot;,
+          &quot;refCount&quot;: 1
+        }
+      ],
+      &quot;truncated&quot;: false
+    },
+    {
+      &quot;id&quot;: &quot;demo-snapshot:1&quot;,
+      &quot;label&quot;: &quot;演示：第 1 轮返回大厅&quot;,
+      &quot;time&quot;: 20000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;counts&quot;: {
+        &quot;nodes&quot;: 9,
+        &quot;components&quot;: 9,
+        &quot;assets&quot;: 5,
+        &quot;tweens&quot;: 2,
+        &quot;listeners&quot;: 4
+      },
+      &quot;objects&quot;: [
+        {
+          &quot;id&quot;: &quot;demo-node:0&quot;,
+          &quot;kind&quot;: &quot;node&quot;,
+          &quot;label&quot;: &quot;大厅节点 1&quot;,
+          &quot;createdAt&quot;: 0,
+          &quot;lastSeenAt&quot;: 20000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/Node1&quot;,
+          &quot;details&quot;: &quot;演示数据：模拟同场景多轮业务后节点仍存在&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-component:0&quot;,
+          &quot;kind&quot;: &quot;component&quot;,
+          &quot;label&quot;: &quot;UITransform&quot;,
+          &quot;createdAt&quot;: 0,
+          &quot;lastSeenAt&quot;: 20000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/Node1/UITransform&quot;,
+          &quot;details&quot;: &quot;演示数据：并非真实游戏实例&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-node:1&quot;,
+          &quot;kind&quot;: &quot;node&quot;,
+          &quot;label&quot;: &quot;大厅节点 2&quot;,
+          &quot;createdAt&quot;: 0,
+          &quot;lastSeenAt&quot;: 20000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/Node2&quot;,
+          &quot;details&quot;: &quot;演示数据：模拟同场景多轮业务后节点仍存在&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-component:1&quot;,
+          &quot;kind&quot;: &quot;component&quot;,
+          &quot;label&quot;: &quot;UITransform&quot;,
+          &quot;createdAt&quot;: 0,
+          &quot;lastSeenAt&quot;: 20000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/Node2/UITransform&quot;,
+          &quot;details&quot;: &quot;演示数据：并非真实游戏实例&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-node:2&quot;,
+          &quot;kind&quot;: &quot;node&quot;,
+          &quot;label&quot;: &quot;大厅节点 3&quot;,
+          &quot;createdAt&quot;: 0,
+          &quot;lastSeenAt&quot;: 20000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/Node3&quot;,
+          &quot;details&quot;: &quot;演示数据：模拟同场景多轮业务后节点仍存在&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-component:2&quot;,
+          &quot;kind&quot;: &quot;component&quot;,
+          &quot;label&quot;: &quot;UITransform&quot;,
+          &quot;createdAt&quot;: 0,
+          &quot;lastSeenAt&quot;: 20000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/Node3/UITransform&quot;,
+          &quot;details&quot;: &quot;演示数据：并非真实游戏实例&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-node:3&quot;,
+          &quot;kind&quot;: &quot;node&quot;,
+          &quot;label&quot;: &quot;大厅节点 4&quot;,
+          &quot;createdAt&quot;: 0,
+          &quot;lastSeenAt&quot;: 20000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/Node4&quot;,
+          &quot;details&quot;: &quot;演示数据：模拟同场景多轮业务后节点仍存在&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-component:3&quot;,
+          &quot;kind&quot;: &quot;component&quot;,
+          &quot;label&quot;: &quot;UITransform&quot;,
+          &quot;createdAt&quot;: 0,
+          &quot;lastSeenAt&quot;: 20000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/Node4/UITransform&quot;,
+          &quot;details&quot;: &quot;演示数据：并非真实游戏实例&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-node:4&quot;,
+          &quot;kind&quot;: &quot;node&quot;,
+          &quot;label&quot;: &quot;大厅节点 5&quot;,
+          &quot;createdAt&quot;: 0,
+          &quot;lastSeenAt&quot;: 20000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/Node5&quot;,
+          &quot;details&quot;: &quot;演示数据：模拟同场景多轮业务后节点仍存在&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-component:4&quot;,
+          &quot;kind&quot;: &quot;component&quot;,
+          &quot;label&quot;: &quot;UITransform&quot;,
+          &quot;createdAt&quot;: 0,
+          &quot;lastSeenAt&quot;: 20000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/Node5/UITransform&quot;,
+          &quot;details&quot;: &quot;演示数据：并非真实游戏实例&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-node:5&quot;,
+          &quot;kind&quot;: &quot;node&quot;,
+          &quot;label&quot;: &quot;弹窗残留节点 1&quot;,
+          &quot;createdAt&quot;: 20000,
+          &quot;lastSeenAt&quot;: 20000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/PopupCache/Node1&quot;,
+          &quot;details&quot;: &quot;演示数据：模拟同场景多轮业务后节点仍存在&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-component:5&quot;,
+          &quot;kind&quot;: &quot;component&quot;,
+          &quot;label&quot;: &quot;DemoPopupController&quot;,
+          &quot;createdAt&quot;: 20000,
+          &quot;lastSeenAt&quot;: 20000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/PopupCache/Node1/DemoPopupController&quot;,
+          &quot;details&quot;: &quot;演示数据：并非真实游戏实例&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-node:6&quot;,
+          &quot;kind&quot;: &quot;node&quot;,
+          &quot;label&quot;: &quot;弹窗残留节点 2&quot;,
+          &quot;createdAt&quot;: 20000,
+          &quot;lastSeenAt&quot;: 20000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/PopupCache/Node2&quot;,
+          &quot;details&quot;: &quot;演示数据：模拟同场景多轮业务后节点仍存在&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-component:6&quot;,
+          &quot;kind&quot;: &quot;component&quot;,
+          &quot;label&quot;: &quot;DemoPopupController&quot;,
+          &quot;createdAt&quot;: 20000,
+          &quot;lastSeenAt&quot;: 20000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/PopupCache/Node2/DemoPopupController&quot;,
+          &quot;details&quot;: &quot;演示数据：并非真实游戏实例&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-node:7&quot;,
+          &quot;kind&quot;: &quot;node&quot;,
+          &quot;label&quot;: &quot;弹窗残留节点 3&quot;,
+          &quot;createdAt&quot;: 20000,
+          &quot;lastSeenAt&quot;: 20000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/PopupCache/Node3&quot;,
+          &quot;details&quot;: &quot;演示数据：模拟同场景多轮业务后节点仍存在&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-component:7&quot;,
+          &quot;kind&quot;: &quot;component&quot;,
+          &quot;label&quot;: &quot;DemoPopupController&quot;,
+          &quot;createdAt&quot;: 20000,
+          &quot;lastSeenAt&quot;: 20000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/PopupCache/Node3/DemoPopupController&quot;,
+          &quot;details&quot;: &quot;演示数据：并非真实游戏实例&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-node:8&quot;,
+          &quot;kind&quot;: &quot;node&quot;,
+          &quot;label&quot;: &quot;弹窗残留节点 4&quot;,
+          &quot;createdAt&quot;: 20000,
+          &quot;lastSeenAt&quot;: 20000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/PopupCache/Node4&quot;,
+          &quot;details&quot;: &quot;演示数据：模拟同场景多轮业务后节点仍存在&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-component:8&quot;,
+          &quot;kind&quot;: &quot;component&quot;,
+          &quot;label&quot;: &quot;DemoPopupController&quot;,
+          &quot;createdAt&quot;: 20000,
+          &quot;lastSeenAt&quot;: 20000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/PopupCache/Node4/DemoPopupController&quot;,
+          &quot;details&quot;: &quot;演示数据：并非真实游戏实例&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-tween:0&quot;,
+          &quot;kind&quot;: &quot;tween&quot;,
+          &quot;label&quot;: &quot;背景循环动画（正常基线）&quot;,
+          &quot;createdAt&quot;: 0,
+          &quot;lastSeenAt&quot;: 20000,
+          &quot;details&quot;: &quot;演示数据：合法常驻动画&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-tween:1&quot;,
+          &quot;kind&quot;: &quot;tween&quot;,
+          &quot;label&quot;: &quot;弹窗关闭后残留的循环 Tween&quot;,
+          &quot;createdAt&quot;: 20000,
+          &quot;lastSeenAt&quot;: 20000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/ClosedPopup&quot;,
+          &quot;stack&quot;: &quot;演示调用栈（合成）\n  at DemoPopup.open (DemoPopup.ts:24)\n  at DemoLobby.showPopup (DemoLobby.ts:42)&quot;,
+          &quot;details&quot;: &quot;演示数据：模拟已销毁目标仍有关联记录&quot;,
+          &quot;destroyed&quot;: true
+        },
+        {
+          &quot;id&quot;: &quot;demo-listener:0&quot;,
+          &quot;kind&quot;: &quot;listener&quot;,
+          &quot;label&quot;: &quot;全局监听器 1（正常基线）&quot;,
+          &quot;createdAt&quot;: 0,
+          &quot;lastSeenAt&quot;: 20000,
+          &quot;details&quot;: &quot;演示数据：正常常驻监听&quot;,
+          &quot;destroyed&quot;: false
+        },
+        {
+          &quot;id&quot;: &quot;demo-listener:1&quot;,
+          &quot;kind&quot;: &quot;listener&quot;,
+          &quot;label&quot;: &quot;全局监听器 2（正常基线）&quot;,
+          &quot;createdAt&quot;: 0,
+          &quot;lastSeenAt&quot;: 20000,
+          &quot;details&quot;: &quot;演示数据：正常常驻监听&quot;,
+          &quot;destroyed&quot;: false
+        },
+        {
+          &quot;id&quot;: &quot;demo-listener:2&quot;,
+          &quot;kind&quot;: &quot;listener&quot;,
+          &quot;label&quot;: &quot;全局监听器 3（正常基线）&quot;,
+          &quot;createdAt&quot;: 0,
+          &quot;lastSeenAt&quot;: 20000,
+          &quot;details&quot;: &quot;演示数据：正常常驻监听&quot;,
+          &quot;destroyed&quot;: false
+        },
+        {
+          &quot;id&quot;: &quot;demo-listener:3&quot;,
+          &quot;kind&quot;: &quot;listener&quot;,
+          &quot;label&quot;: &quot;关闭弹窗遗留的 changed 监听器&quot;,
+          &quot;createdAt&quot;: 20000,
+          &quot;lastSeenAt&quot;: 20000,
+          &quot;path&quot;: &quot;DemoLobby/ClosedPopup1&quot;,
+          &quot;stack&quot;: &quot;演示调用栈（合成）\n  at DemoPopup.onEnable (DemoPopup.ts:18)&quot;,
+          &quot;details&quot;: &quot;演示数据：模拟未解绑已销毁 target&quot;,
+          &quot;destroyed&quot;: true
+        }
+      ],
+      &quot;assets&quot;: [
+        {
+          &quot;id&quot;: &quot;demo-asset:0&quot;,
+          &quot;name&quot;: &quot;公共资源 1&quot;,
+          &quot;type&quot;: &quot;Prefab&quot;,
+          &quot;refCount&quot;: 1
+        },
+        {
+          &quot;id&quot;: &quot;demo-asset:1&quot;,
+          &quot;name&quot;: &quot;公共资源 2&quot;,
+          &quot;type&quot;: &quot;Texture2D&quot;,
+          &quot;refCount&quot;: 1
+        },
+        {
+          &quot;id&quot;: &quot;demo-asset:2&quot;,
+          &quot;name&quot;: &quot;公共资源 3&quot;,
+          &quot;type&quot;: &quot;Prefab&quot;,
+          &quot;refCount&quot;: 1
+        },
+        {
+          &quot;id&quot;: &quot;demo-asset:3&quot;,
+          &quot;name&quot;: &quot;弹窗纹理 1&quot;,
+          &quot;type&quot;: &quot;Texture2D&quot;,
+          &quot;refCount&quot;: 2
+        },
+        {
+          &quot;id&quot;: &quot;demo-asset:4&quot;,
+          &quot;name&quot;: &quot;弹窗纹理 2&quot;,
+          &quot;type&quot;: &quot;Prefab&quot;,
+          &quot;refCount&quot;: 2
+        }
+      ],
+      &quot;truncated&quot;: false
+    },
+    {
+      &quot;id&quot;: &quot;demo-snapshot:2&quot;,
+      &quot;label&quot;: &quot;演示：第 2 轮返回大厅&quot;,
+      &quot;time&quot;: 40000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;counts&quot;: {
+        &quot;nodes&quot;: 13,
+        &quot;components&quot;: 13,
+        &quot;assets&quot;: 7,
+        &quot;tweens&quot;: 2,
+        &quot;listeners&quot;: 5
+      },
+      &quot;objects&quot;: [
+        {
+          &quot;id&quot;: &quot;demo-node:0&quot;,
+          &quot;kind&quot;: &quot;node&quot;,
+          &quot;label&quot;: &quot;大厅节点 1&quot;,
+          &quot;createdAt&quot;: 0,
+          &quot;lastSeenAt&quot;: 40000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/Node1&quot;,
+          &quot;details&quot;: &quot;演示数据：模拟同场景多轮业务后节点仍存在&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-component:0&quot;,
+          &quot;kind&quot;: &quot;component&quot;,
+          &quot;label&quot;: &quot;UITransform&quot;,
+          &quot;createdAt&quot;: 0,
+          &quot;lastSeenAt&quot;: 40000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/Node1/UITransform&quot;,
+          &quot;details&quot;: &quot;演示数据：并非真实游戏实例&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-node:1&quot;,
+          &quot;kind&quot;: &quot;node&quot;,
+          &quot;label&quot;: &quot;大厅节点 2&quot;,
+          &quot;createdAt&quot;: 0,
+          &quot;lastSeenAt&quot;: 40000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/Node2&quot;,
+          &quot;details&quot;: &quot;演示数据：模拟同场景多轮业务后节点仍存在&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-component:1&quot;,
+          &quot;kind&quot;: &quot;component&quot;,
+          &quot;label&quot;: &quot;UITransform&quot;,
+          &quot;createdAt&quot;: 0,
+          &quot;lastSeenAt&quot;: 40000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/Node2/UITransform&quot;,
+          &quot;details&quot;: &quot;演示数据：并非真实游戏实例&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-node:2&quot;,
+          &quot;kind&quot;: &quot;node&quot;,
+          &quot;label&quot;: &quot;大厅节点 3&quot;,
+          &quot;createdAt&quot;: 0,
+          &quot;lastSeenAt&quot;: 40000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/Node3&quot;,
+          &quot;details&quot;: &quot;演示数据：模拟同场景多轮业务后节点仍存在&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-component:2&quot;,
+          &quot;kind&quot;: &quot;component&quot;,
+          &quot;label&quot;: &quot;UITransform&quot;,
+          &quot;createdAt&quot;: 0,
+          &quot;lastSeenAt&quot;: 40000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/Node3/UITransform&quot;,
+          &quot;details&quot;: &quot;演示数据：并非真实游戏实例&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-node:3&quot;,
+          &quot;kind&quot;: &quot;node&quot;,
+          &quot;label&quot;: &quot;大厅节点 4&quot;,
+          &quot;createdAt&quot;: 0,
+          &quot;lastSeenAt&quot;: 40000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/Node4&quot;,
+          &quot;details&quot;: &quot;演示数据：模拟同场景多轮业务后节点仍存在&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-component:3&quot;,
+          &quot;kind&quot;: &quot;component&quot;,
+          &quot;label&quot;: &quot;UITransform&quot;,
+          &quot;createdAt&quot;: 0,
+          &quot;lastSeenAt&quot;: 40000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/Node4/UITransform&quot;,
+          &quot;details&quot;: &quot;演示数据：并非真实游戏实例&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-node:4&quot;,
+          &quot;kind&quot;: &quot;node&quot;,
+          &quot;label&quot;: &quot;大厅节点 5&quot;,
+          &quot;createdAt&quot;: 0,
+          &quot;lastSeenAt&quot;: 40000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/Node5&quot;,
+          &quot;details&quot;: &quot;演示数据：模拟同场景多轮业务后节点仍存在&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-component:4&quot;,
+          &quot;kind&quot;: &quot;component&quot;,
+          &quot;label&quot;: &quot;UITransform&quot;,
+          &quot;createdAt&quot;: 0,
+          &quot;lastSeenAt&quot;: 40000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/Node5/UITransform&quot;,
+          &quot;details&quot;: &quot;演示数据：并非真实游戏实例&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-node:5&quot;,
+          &quot;kind&quot;: &quot;node&quot;,
+          &quot;label&quot;: &quot;弹窗残留节点 1&quot;,
+          &quot;createdAt&quot;: 20000,
+          &quot;lastSeenAt&quot;: 40000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/PopupCache/Node1&quot;,
+          &quot;details&quot;: &quot;演示数据：模拟同场景多轮业务后节点仍存在&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-component:5&quot;,
+          &quot;kind&quot;: &quot;component&quot;,
+          &quot;label&quot;: &quot;DemoPopupController&quot;,
+          &quot;createdAt&quot;: 20000,
+          &quot;lastSeenAt&quot;: 40000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/PopupCache/Node1/DemoPopupController&quot;,
+          &quot;details&quot;: &quot;演示数据：并非真实游戏实例&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-node:6&quot;,
+          &quot;kind&quot;: &quot;node&quot;,
+          &quot;label&quot;: &quot;弹窗残留节点 2&quot;,
+          &quot;createdAt&quot;: 20000,
+          &quot;lastSeenAt&quot;: 40000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/PopupCache/Node2&quot;,
+          &quot;details&quot;: &quot;演示数据：模拟同场景多轮业务后节点仍存在&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-component:6&quot;,
+          &quot;kind&quot;: &quot;component&quot;,
+          &quot;label&quot;: &quot;DemoPopupController&quot;,
+          &quot;createdAt&quot;: 20000,
+          &quot;lastSeenAt&quot;: 40000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/PopupCache/Node2/DemoPopupController&quot;,
+          &quot;details&quot;: &quot;演示数据：并非真实游戏实例&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-node:7&quot;,
+          &quot;kind&quot;: &quot;node&quot;,
+          &quot;label&quot;: &quot;弹窗残留节点 3&quot;,
+          &quot;createdAt&quot;: 20000,
+          &quot;lastSeenAt&quot;: 40000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/PopupCache/Node3&quot;,
+          &quot;details&quot;: &quot;演示数据：模拟同场景多轮业务后节点仍存在&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-component:7&quot;,
+          &quot;kind&quot;: &quot;component&quot;,
+          &quot;label&quot;: &quot;DemoPopupController&quot;,
+          &quot;createdAt&quot;: 20000,
+          &quot;lastSeenAt&quot;: 40000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/PopupCache/Node3/DemoPopupController&quot;,
+          &quot;details&quot;: &quot;演示数据：并非真实游戏实例&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-node:8&quot;,
+          &quot;kind&quot;: &quot;node&quot;,
+          &quot;label&quot;: &quot;弹窗残留节点 4&quot;,
+          &quot;createdAt&quot;: 20000,
+          &quot;lastSeenAt&quot;: 40000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/PopupCache/Node4&quot;,
+          &quot;details&quot;: &quot;演示数据：模拟同场景多轮业务后节点仍存在&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-component:8&quot;,
+          &quot;kind&quot;: &quot;component&quot;,
+          &quot;label&quot;: &quot;DemoPopupController&quot;,
+          &quot;createdAt&quot;: 20000,
+          &quot;lastSeenAt&quot;: 40000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/PopupCache/Node4/DemoPopupController&quot;,
+          &quot;details&quot;: &quot;演示数据：并非真实游戏实例&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-node:9&quot;,
+          &quot;kind&quot;: &quot;node&quot;,
+          &quot;label&quot;: &quot;弹窗残留节点 5&quot;,
+          &quot;createdAt&quot;: 40000,
+          &quot;lastSeenAt&quot;: 40000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/PopupCache/Node5&quot;,
+          &quot;details&quot;: &quot;演示数据：模拟同场景多轮业务后节点仍存在&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-component:9&quot;,
+          &quot;kind&quot;: &quot;component&quot;,
+          &quot;label&quot;: &quot;DemoPopupController&quot;,
+          &quot;createdAt&quot;: 40000,
+          &quot;lastSeenAt&quot;: 40000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/PopupCache/Node5/DemoPopupController&quot;,
+          &quot;details&quot;: &quot;演示数据：并非真实游戏实例&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-node:10&quot;,
+          &quot;kind&quot;: &quot;node&quot;,
+          &quot;label&quot;: &quot;弹窗残留节点 6&quot;,
+          &quot;createdAt&quot;: 40000,
+          &quot;lastSeenAt&quot;: 40000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/PopupCache/Node6&quot;,
+          &quot;details&quot;: &quot;演示数据：模拟同场景多轮业务后节点仍存在&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-component:10&quot;,
+          &quot;kind&quot;: &quot;component&quot;,
+          &quot;label&quot;: &quot;DemoPopupController&quot;,
+          &quot;createdAt&quot;: 40000,
+          &quot;lastSeenAt&quot;: 40000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/PopupCache/Node6/DemoPopupController&quot;,
+          &quot;details&quot;: &quot;演示数据：并非真实游戏实例&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-node:11&quot;,
+          &quot;kind&quot;: &quot;node&quot;,
+          &quot;label&quot;: &quot;弹窗残留节点 7&quot;,
+          &quot;createdAt&quot;: 40000,
+          &quot;lastSeenAt&quot;: 40000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/PopupCache/Node7&quot;,
+          &quot;details&quot;: &quot;演示数据：模拟同场景多轮业务后节点仍存在&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-component:11&quot;,
+          &quot;kind&quot;: &quot;component&quot;,
+          &quot;label&quot;: &quot;DemoPopupController&quot;,
+          &quot;createdAt&quot;: 40000,
+          &quot;lastSeenAt&quot;: 40000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/PopupCache/Node7/DemoPopupController&quot;,
+          &quot;details&quot;: &quot;演示数据：并非真实游戏实例&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-node:12&quot;,
+          &quot;kind&quot;: &quot;node&quot;,
+          &quot;label&quot;: &quot;弹窗残留节点 8&quot;,
+          &quot;createdAt&quot;: 40000,
+          &quot;lastSeenAt&quot;: 40000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/PopupCache/Node8&quot;,
+          &quot;details&quot;: &quot;演示数据：模拟同场景多轮业务后节点仍存在&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-component:12&quot;,
+          &quot;kind&quot;: &quot;component&quot;,
+          &quot;label&quot;: &quot;DemoPopupController&quot;,
+          &quot;createdAt&quot;: 40000,
+          &quot;lastSeenAt&quot;: 40000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/PopupCache/Node8/DemoPopupController&quot;,
+          &quot;details&quot;: &quot;演示数据：并非真实游戏实例&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-tween:0&quot;,
+          &quot;kind&quot;: &quot;tween&quot;,
+          &quot;label&quot;: &quot;背景循环动画（正常基线）&quot;,
+          &quot;createdAt&quot;: 0,
+          &quot;lastSeenAt&quot;: 40000,
+          &quot;details&quot;: &quot;演示数据：合法常驻动画&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-tween:1&quot;,
+          &quot;kind&quot;: &quot;tween&quot;,
+          &quot;label&quot;: &quot;弹窗关闭后残留的循环 Tween&quot;,
+          &quot;createdAt&quot;: 20000,
+          &quot;lastSeenAt&quot;: 40000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/ClosedPopup&quot;,
+          &quot;stack&quot;: &quot;演示调用栈（合成）\n  at DemoPopup.open (DemoPopup.ts:24)\n  at DemoLobby.showPopup (DemoLobby.ts:42)&quot;,
+          &quot;details&quot;: &quot;演示数据：模拟已销毁目标仍有关联记录&quot;,
+          &quot;destroyed&quot;: true
+        },
+        {
+          &quot;id&quot;: &quot;demo-listener:0&quot;,
+          &quot;kind&quot;: &quot;listener&quot;,
+          &quot;label&quot;: &quot;全局监听器 1（正常基线）&quot;,
+          &quot;createdAt&quot;: 0,
+          &quot;lastSeenAt&quot;: 40000,
+          &quot;details&quot;: &quot;演示数据：正常常驻监听&quot;,
+          &quot;destroyed&quot;: false
+        },
+        {
+          &quot;id&quot;: &quot;demo-listener:1&quot;,
+          &quot;kind&quot;: &quot;listener&quot;,
+          &quot;label&quot;: &quot;全局监听器 2（正常基线）&quot;,
+          &quot;createdAt&quot;: 0,
+          &quot;lastSeenAt&quot;: 40000,
+          &quot;details&quot;: &quot;演示数据：正常常驻监听&quot;,
+          &quot;destroyed&quot;: false
+        },
+        {
+          &quot;id&quot;: &quot;demo-listener:2&quot;,
+          &quot;kind&quot;: &quot;listener&quot;,
+          &quot;label&quot;: &quot;全局监听器 3（正常基线）&quot;,
+          &quot;createdAt&quot;: 0,
+          &quot;lastSeenAt&quot;: 40000,
+          &quot;details&quot;: &quot;演示数据：正常常驻监听&quot;,
+          &quot;destroyed&quot;: false
+        },
+        {
+          &quot;id&quot;: &quot;demo-listener:3&quot;,
+          &quot;kind&quot;: &quot;listener&quot;,
+          &quot;label&quot;: &quot;关闭弹窗遗留的 changed 监听器&quot;,
+          &quot;createdAt&quot;: 20000,
+          &quot;lastSeenAt&quot;: 40000,
+          &quot;path&quot;: &quot;DemoLobby/ClosedPopup1&quot;,
+          &quot;stack&quot;: &quot;演示调用栈（合成）\n  at DemoPopup.onEnable (DemoPopup.ts:18)&quot;,
+          &quot;details&quot;: &quot;演示数据：模拟未解绑已销毁 target&quot;,
+          &quot;destroyed&quot;: true
+        },
+        {
+          &quot;id&quot;: &quot;demo-listener:4&quot;,
+          &quot;kind&quot;: &quot;listener&quot;,
+          &quot;label&quot;: &quot;关闭弹窗遗留的 changed 监听器&quot;,
+          &quot;createdAt&quot;: 40000,
+          &quot;lastSeenAt&quot;: 40000,
+          &quot;path&quot;: &quot;DemoLobby/ClosedPopup2&quot;,
+          &quot;stack&quot;: &quot;演示调用栈（合成）\n  at DemoPopup.onEnable (DemoPopup.ts:18)&quot;,
+          &quot;details&quot;: &quot;演示数据：模拟未解绑已销毁 target&quot;,
+          &quot;destroyed&quot;: true
+        }
+      ],
+      &quot;assets&quot;: [
+        {
+          &quot;id&quot;: &quot;demo-asset:0&quot;,
+          &quot;name&quot;: &quot;公共资源 1&quot;,
+          &quot;type&quot;: &quot;Prefab&quot;,
+          &quot;refCount&quot;: 1
+        },
+        {
+          &quot;id&quot;: &quot;demo-asset:1&quot;,
+          &quot;name&quot;: &quot;公共资源 2&quot;,
+          &quot;type&quot;: &quot;Texture2D&quot;,
+          &quot;refCount&quot;: 1
+        },
+        {
+          &quot;id&quot;: &quot;demo-asset:2&quot;,
+          &quot;name&quot;: &quot;公共资源 3&quot;,
+          &quot;type&quot;: &quot;Prefab&quot;,
+          &quot;refCount&quot;: 1
+        },
+        {
+          &quot;id&quot;: &quot;demo-asset:3&quot;,
+          &quot;name&quot;: &quot;弹窗纹理 1&quot;,
+          &quot;type&quot;: &quot;Texture2D&quot;,
+          &quot;refCount&quot;: 2
+        },
+        {
+          &quot;id&quot;: &quot;demo-asset:4&quot;,
+          &quot;name&quot;: &quot;弹窗纹理 2&quot;,
+          &quot;type&quot;: &quot;Prefab&quot;,
+          &quot;refCount&quot;: 2
+        },
+        {
+          &quot;id&quot;: &quot;demo-asset:5&quot;,
+          &quot;name&quot;: &quot;弹窗纹理 3&quot;,
+          &quot;type&quot;: &quot;Texture2D&quot;,
+          &quot;refCount&quot;: 2
+        },
+        {
+          &quot;id&quot;: &quot;demo-asset:6&quot;,
+          &quot;name&quot;: &quot;弹窗纹理 4&quot;,
+          &quot;type&quot;: &quot;Prefab&quot;,
+          &quot;refCount&quot;: 2
+        }
+      ],
+      &quot;truncated&quot;: false
+    },
+    {
+      &quot;id&quot;: &quot;demo-snapshot:3&quot;,
+      &quot;label&quot;: &quot;演示：第 3 轮返回大厅&quot;,
+      &quot;time&quot;: 60000,
+      &quot;scene&quot;: &quot;演示大厅（合成数据）&quot;,
+      &quot;counts&quot;: {
+        &quot;nodes&quot;: 17,
+        &quot;components&quot;: 17,
+        &quot;assets&quot;: 9,
+        &quot;tweens&quot;: 2,
+        &quot;listeners&quot;: 6
+      },
+      &quot;objects&quot;: [
+        {
+          &quot;id&quot;: &quot;demo-node:0&quot;,
+          &quot;kind&quot;: &quot;node&quot;,
+          &quot;label&quot;: &quot;大厅节点 1&quot;,
+          &quot;createdAt&quot;: 0,
+          &quot;lastSeenAt&quot;: 60000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/Node1&quot;,
+          &quot;details&quot;: &quot;演示数据：模拟同场景多轮业务后节点仍存在&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-component:0&quot;,
+          &quot;kind&quot;: &quot;component&quot;,
+          &quot;label&quot;: &quot;UITransform&quot;,
+          &quot;createdAt&quot;: 0,
+          &quot;lastSeenAt&quot;: 60000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/Node1/UITransform&quot;,
+          &quot;details&quot;: &quot;演示数据：并非真实游戏实例&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-node:1&quot;,
+          &quot;kind&quot;: &quot;node&quot;,
+          &quot;label&quot;: &quot;大厅节点 2&quot;,
+          &quot;createdAt&quot;: 0,
+          &quot;lastSeenAt&quot;: 60000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/Node2&quot;,
+          &quot;details&quot;: &quot;演示数据：模拟同场景多轮业务后节点仍存在&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-component:1&quot;,
+          &quot;kind&quot;: &quot;component&quot;,
+          &quot;label&quot;: &quot;UITransform&quot;,
+          &quot;createdAt&quot;: 0,
+          &quot;lastSeenAt&quot;: 60000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/Node2/UITransform&quot;,
+          &quot;details&quot;: &quot;演示数据：并非真实游戏实例&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-node:2&quot;,
+          &quot;kind&quot;: &quot;node&quot;,
+          &quot;label&quot;: &quot;大厅节点 3&quot;,
+          &quot;createdAt&quot;: 0,
+          &quot;lastSeenAt&quot;: 60000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/Node3&quot;,
+          &quot;details&quot;: &quot;演示数据：模拟同场景多轮业务后节点仍存在&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-component:2&quot;,
+          &quot;kind&quot;: &quot;component&quot;,
+          &quot;label&quot;: &quot;UITransform&quot;,
+          &quot;createdAt&quot;: 0,
+          &quot;lastSeenAt&quot;: 60000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/Node3/UITransform&quot;,
+          &quot;details&quot;: &quot;演示数据：并非真实游戏实例&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-node:3&quot;,
+          &quot;kind&quot;: &quot;node&quot;,
+          &quot;label&quot;: &quot;大厅节点 4&quot;,
+          &quot;createdAt&quot;: 0,
+          &quot;lastSeenAt&quot;: 60000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/Node4&quot;,
+          &quot;details&quot;: &quot;演示数据：模拟同场景多轮业务后节点仍存在&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-component:3&quot;,
+          &quot;kind&quot;: &quot;component&quot;,
+          &quot;label&quot;: &quot;UITransform&quot;,
+          &quot;createdAt&quot;: 0,
+          &quot;lastSeenAt&quot;: 60000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/Node4/UITransform&quot;,
+          &quot;details&quot;: &quot;演示数据：并非真实游戏实例&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-node:4&quot;,
+          &quot;kind&quot;: &quot;node&quot;,
+          &quot;label&quot;: &quot;大厅节点 5&quot;,
+          &quot;createdAt&quot;: 0,
+          &quot;lastSeenAt&quot;: 60000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/Node5&quot;,
+          &quot;details&quot;: &quot;演示数据：模拟同场景多轮业务后节点仍存在&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-component:4&quot;,
+          &quot;kind&quot;: &quot;component&quot;,
+          &quot;label&quot;: &quot;UITransform&quot;,
+          &quot;createdAt&quot;: 0,
+          &quot;lastSeenAt&quot;: 60000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/Node5/UITransform&quot;,
+          &quot;details&quot;: &quot;演示数据：并非真实游戏实例&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-node:5&quot;,
+          &quot;kind&quot;: &quot;node&quot;,
+          &quot;label&quot;: &quot;弹窗残留节点 1&quot;,
+          &quot;createdAt&quot;: 20000,
+          &quot;lastSeenAt&quot;: 60000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/PopupCache/Node1&quot;,
+          &quot;details&quot;: &quot;演示数据：模拟同场景多轮业务后节点仍存在&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-component:5&quot;,
+          &quot;kind&quot;: &quot;component&quot;,
+          &quot;label&quot;: &quot;DemoPopupController&quot;,
+          &quot;createdAt&quot;: 20000,
+          &quot;lastSeenAt&quot;: 60000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/PopupCache/Node1/DemoPopupController&quot;,
+          &quot;details&quot;: &quot;演示数据：并非真实游戏实例&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-node:6&quot;,
+          &quot;kind&quot;: &quot;node&quot;,
+          &quot;label&quot;: &quot;弹窗残留节点 2&quot;,
+          &quot;createdAt&quot;: 20000,
+          &quot;lastSeenAt&quot;: 60000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/PopupCache/Node2&quot;,
+          &quot;details&quot;: &quot;演示数据：模拟同场景多轮业务后节点仍存在&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-component:6&quot;,
+          &quot;kind&quot;: &quot;component&quot;,
+          &quot;label&quot;: &quot;DemoPopupController&quot;,
+          &quot;createdAt&quot;: 20000,
+          &quot;lastSeenAt&quot;: 60000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/PopupCache/Node2/DemoPopupController&quot;,
+          &quot;details&quot;: &quot;演示数据：并非真实游戏实例&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-node:7&quot;,
+          &quot;kind&quot;: &quot;node&quot;,
+          &quot;label&quot;: &quot;弹窗残留节点 3&quot;,
+          &quot;createdAt&quot;: 20000,
+          &quot;lastSeenAt&quot;: 60000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/PopupCache/Node3&quot;,
+          &quot;details&quot;: &quot;演示数据：模拟同场景多轮业务后节点仍存在&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-component:7&quot;,
+          &quot;kind&quot;: &quot;component&quot;,
+          &quot;label&quot;: &quot;DemoPopupController&quot;,
+          &quot;createdAt&quot;: 20000,
+          &quot;lastSeenAt&quot;: 60000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/PopupCache/Node3/DemoPopupController&quot;,
+          &quot;details&quot;: &quot;演示数据：并非真实游戏实例&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-node:8&quot;,
+          &quot;kind&quot;: &quot;node&quot;,
+          &quot;label&quot;: &quot;弹窗残留节点 4&quot;,
+          &quot;createdAt&quot;: 20000,
+          &quot;lastSeenAt&quot;: 60000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/PopupCache/Node4&quot;,
+          &quot;details&quot;: &quot;演示数据：模拟同场景多轮业务后节点仍存在&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-component:8&quot;,
+          &quot;kind&quot;: &quot;component&quot;,
+          &quot;label&quot;: &quot;DemoPopupController&quot;,
+          &quot;createdAt&quot;: 20000,
+          &quot;lastSeenAt&quot;: 60000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/PopupCache/Node4/DemoPopupController&quot;,
+          &quot;details&quot;: &quot;演示数据：并非真实游戏实例&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-node:9&quot;,
+          &quot;kind&quot;: &quot;node&quot;,
+          &quot;label&quot;: &quot;弹窗残留节点 5&quot;,
+          &quot;createdAt&quot;: 40000,
+          &quot;lastSeenAt&quot;: 60000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/PopupCache/Node5&quot;,
+          &quot;details&quot;: &quot;演示数据：模拟同场景多轮业务后节点仍存在&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-component:9&quot;,
+          &quot;kind&quot;: &quot;component&quot;,
+          &quot;label&quot;: &quot;DemoPopupController&quot;,
+          &quot;createdAt&quot;: 40000,
+          &quot;lastSeenAt&quot;: 60000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/PopupCache/Node5/DemoPopupController&quot;,
+          &quot;details&quot;: &quot;演示数据：并非真实游戏实例&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-node:10&quot;,
+          &quot;kind&quot;: &quot;node&quot;,
+          &quot;label&quot;: &quot;弹窗残留节点 6&quot;,
+          &quot;createdAt&quot;: 40000,
+          &quot;lastSeenAt&quot;: 60000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/PopupCache/Node6&quot;,
+          &quot;details&quot;: &quot;演示数据：模拟同场景多轮业务后节点仍存在&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-component:10&quot;,
+          &quot;kind&quot;: &quot;component&quot;,
+          &quot;label&quot;: &quot;DemoPopupController&quot;,
+          &quot;createdAt&quot;: 40000,
+          &quot;lastSeenAt&quot;: 60000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/PopupCache/Node6/DemoPopupController&quot;,
+          &quot;details&quot;: &quot;演示数据：并非真实游戏实例&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-node:11&quot;,
+          &quot;kind&quot;: &quot;node&quot;,
+          &quot;label&quot;: &quot;弹窗残留节点 7&quot;,
+          &quot;createdAt&quot;: 40000,
+          &quot;lastSeenAt&quot;: 60000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/PopupCache/Node7&quot;,
+          &quot;details&quot;: &quot;演示数据：模拟同场景多轮业务后节点仍存在&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-component:11&quot;,
+          &quot;kind&quot;: &quot;component&quot;,
+          &quot;label&quot;: &quot;DemoPopupController&quot;,
+          &quot;createdAt&quot;: 40000,
+          &quot;lastSeenAt&quot;: 60000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/PopupCache/Node7/DemoPopupController&quot;,
+          &quot;details&quot;: &quot;演示数据：并非真实游戏实例&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-node:12&quot;,
+          &quot;kind&quot;: &quot;node&quot;,
+          &quot;label&quot;: &quot;弹窗残留节点 8&quot;,
+          &quot;createdAt&quot;: 40000,
+          &quot;lastSeenAt&quot;: 60000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/PopupCache/Node8&quot;,
+          &quot;details&quot;: &quot;演示数据：模拟同场景多轮业务后节点仍存在&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-component:12&quot;,
+          &quot;kind&quot;: &quot;component&quot;,
+          &quot;label&quot;: &quot;DemoPopupController&quot;,
+          &quot;createdAt&quot;: 40000,
+          &quot;lastSeenAt&quot;: 60000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/PopupCache/Node8/DemoPopupController&quot;,
+          &quot;details&quot;: &quot;演示数据：并非真实游戏实例&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-node:13&quot;,
+          &quot;kind&quot;: &quot;node&quot;,
+          &quot;label&quot;: &quot;弹窗残留节点 9&quot;,
+          &quot;createdAt&quot;: 60000,
+          &quot;lastSeenAt&quot;: 60000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/PopupCache/Node9&quot;,
+          &quot;details&quot;: &quot;演示数据：模拟同场景多轮业务后节点仍存在&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-component:13&quot;,
+          &quot;kind&quot;: &quot;component&quot;,
+          &quot;label&quot;: &quot;DemoPopupController&quot;,
+          &quot;createdAt&quot;: 60000,
+          &quot;lastSeenAt&quot;: 60000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/PopupCache/Node9/DemoPopupController&quot;,
+          &quot;details&quot;: &quot;演示数据：并非真实游戏实例&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-node:14&quot;,
+          &quot;kind&quot;: &quot;node&quot;,
+          &quot;label&quot;: &quot;弹窗残留节点 10&quot;,
+          &quot;createdAt&quot;: 60000,
+          &quot;lastSeenAt&quot;: 60000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/PopupCache/Node10&quot;,
+          &quot;details&quot;: &quot;演示数据：模拟同场景多轮业务后节点仍存在&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-component:14&quot;,
+          &quot;kind&quot;: &quot;component&quot;,
+          &quot;label&quot;: &quot;DemoPopupController&quot;,
+          &quot;createdAt&quot;: 60000,
+          &quot;lastSeenAt&quot;: 60000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/PopupCache/Node10/DemoPopupController&quot;,
+          &quot;details&quot;: &quot;演示数据：并非真实游戏实例&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-node:15&quot;,
+          &quot;kind&quot;: &quot;node&quot;,
+          &quot;label&quot;: &quot;弹窗残留节点 11&quot;,
+          &quot;createdAt&quot;: 60000,
+          &quot;lastSeenAt&quot;: 60000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/PopupCache/Node11&quot;,
+          &quot;details&quot;: &quot;演示数据：模拟同场景多轮业务后节点仍存在&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-component:15&quot;,
+          &quot;kind&quot;: &quot;component&quot;,
+          &quot;label&quot;: &quot;DemoPopupController&quot;,
+          &quot;createdAt&quot;: 60000,
+          &quot;lastSeenAt&quot;: 60000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/PopupCache/Node11/DemoPopupController&quot;,
+          &quot;details&quot;: &quot;演示数据：并非真实游戏实例&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-node:16&quot;,
+          &quot;kind&quot;: &quot;node&quot;,
+          &quot;label&quot;: &quot;弹窗残留节点 12&quot;,
+          &quot;createdAt&quot;: 60000,
+          &quot;lastSeenAt&quot;: 60000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/PopupCache/Node12&quot;,
+          &quot;details&quot;: &quot;演示数据：模拟同场景多轮业务后节点仍存在&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-component:16&quot;,
+          &quot;kind&quot;: &quot;component&quot;,
+          &quot;label&quot;: &quot;DemoPopupController&quot;,
+          &quot;createdAt&quot;: 60000,
+          &quot;lastSeenAt&quot;: 60000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/PopupCache/Node12/DemoPopupController&quot;,
+          &quot;details&quot;: &quot;演示数据：并非真实游戏实例&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-tween:0&quot;,
+          &quot;kind&quot;: &quot;tween&quot;,
+          &quot;label&quot;: &quot;背景循环动画（正常基线）&quot;,
+          &quot;createdAt&quot;: 0,
+          &quot;lastSeenAt&quot;: 60000,
+          &quot;details&quot;: &quot;演示数据：合法常驻动画&quot;
+        },
+        {
+          &quot;id&quot;: &quot;demo-tween:1&quot;,
+          &quot;kind&quot;: &quot;tween&quot;,
+          &quot;label&quot;: &quot;弹窗关闭后残留的循环 Tween&quot;,
+          &quot;createdAt&quot;: 20000,
+          &quot;lastSeenAt&quot;: 60000,
+          &quot;path&quot;: &quot;DemoLobby/Canvas/ClosedPopup&quot;,
+          &quot;stack&quot;: &quot;演示调用栈（合成）\n  at DemoPopup.open (DemoPopup.ts:24)\n  at DemoLobby.showPopup (DemoLobby.ts:42)&quot;,
+          &quot;details&quot;: &quot;演示数据：模拟已销毁目标仍有关联记录&quot;,
+          &quot;destroyed&quot;: true
+        },
+        {
+          &quot;id&quot;: &quot;demo-listener:0&quot;,
+          &quot;kind&quot;: &quot;listener&quot;,
+          &quot;label&quot;: &quot;全局监听器 1（正常基线）&quot;,
+          &quot;createdAt&quot;: 0,
+          &quot;lastSeenAt&quot;: 60000,
+          &quot;details&quot;: &quot;演示数据：正常常驻监听&quot;,
+          &quot;destroyed&quot;: false
+        },
+        {
+          &quot;id&quot;: &quot;demo-listener:1&quot;,
+          &quot;kind&quot;: &quot;listener&quot;,
+          &quot;label&quot;: &quot;全局监听器 2（正常基线）&quot;,
+          &quot;createdAt&quot;: 0,
+          &quot;lastSeenAt&quot;: 60000,
+          &quot;details&quot;: &quot;演示数据：正常常驻监听&quot;,
+          &quot;destroyed&quot;: false
+        },
+        {
+          &quot;id&quot;: &quot;demo-listener:2&quot;,
+          &quot;kind&quot;: &quot;listener&quot;,
+          &quot;label&quot;: &quot;全局监听器 3（正常基线）&quot;,
+          &quot;createdAt&quot;: 0,
+          &quot;lastSeenAt&quot;: 60000,
+          &quot;details&quot;: &quot;演示数据：正常常驻监听&quot;,
+          &quot;destroyed&quot;: false
+        },
+        {
+          &quot;id&quot;: &quot;demo-listener:3&quot;,
+          &quot;kind&quot;: &quot;listener&quot;,
+          &quot;label&quot;: &quot;关闭弹窗遗留的 changed 监听器&quot;,
+          &quot;createdAt&quot;: 20000,
+          &quot;lastSeenAt&quot;: 60000,
+          &quot;path&quot;: &quot;DemoLobby/ClosedPopup1&quot;,
+          &quot;stack&quot;: &quot;演示调用栈（合成）\n  at DemoPopup.onEnable (DemoPopup.ts:18)&quot;,
+          &quot;details&quot;: &quot;演示数据：模拟未解绑已销毁 target&quot;,
+          &quot;destroyed&quot;: true
+        },
+        {
+          &quot;id&quot;: &quot;demo-listener:4&quot;,
+          &quot;kind&quot;: &quot;listener&quot;,
+          &quot;label&quot;: &quot;关闭弹窗遗留的 changed 监听器&quot;,
+          &quot;createdAt&quot;: 40000,
+          &quot;lastSeenAt&quot;: 60000,
+          &quot;path&quot;: &quot;DemoLobby/ClosedPopup2&quot;,
+          &quot;stack&quot;: &quot;演示调用栈（合成）\n  at DemoPopup.onEnable (DemoPopup.ts:18)&quot;,
+          &quot;details&quot;: &quot;演示数据：模拟未解绑已销毁 target&quot;,
+          &quot;destroyed&quot;: true
+        },
+        {
+          &quot;id&quot;: &quot;demo-listener:5&quot;,
+          &quot;kind&quot;: &quot;listener&quot;,
+          &quot;label&quot;: &quot;关闭弹窗遗留的 changed 监听器&quot;,
+          &quot;createdAt&quot;: 60000,
+          &quot;lastSeenAt&quot;: 60000,
+          &quot;path&quot;: &quot;DemoLobby/ClosedPopup3&quot;,
+          &quot;stack&quot;: &quot;演示调用栈（合成）\n  at DemoPopup.onEnable (DemoPopup.ts:18)&quot;,
+          &quot;details&quot;: &quot;演示数据：模拟未解绑已销毁 target&quot;,
+          &quot;destroyed&quot;: true
+        }
+      ],
+      &quot;assets&quot;: [
+        {
+          &quot;id&quot;: &quot;demo-asset:0&quot;,
+          &quot;name&quot;: &quot;公共资源 1&quot;,
+          &quot;type&quot;: &quot;Prefab&quot;,
+          &quot;refCount&quot;: 1
+        },
+        {
+          &quot;id&quot;: &quot;demo-asset:1&quot;,
+          &quot;name&quot;: &quot;公共资源 2&quot;,
+          &quot;type&quot;: &quot;Texture2D&quot;,
+          &quot;refCount&quot;: 1
+        },
+        {
+          &quot;id&quot;: &quot;demo-asset:2&quot;,
+          &quot;name&quot;: &quot;公共资源 3&quot;,
+          &quot;type&quot;: &quot;Prefab&quot;,
+          &quot;refCount&quot;: 1
+        },
+        {
+          &quot;id&quot;: &quot;demo-asset:3&quot;,
+          &quot;name&quot;: &quot;弹窗纹理 1&quot;,
+          &quot;type&quot;: &quot;Texture2D&quot;,
+          &quot;refCount&quot;: 2
+        },
+        {
+          &quot;id&quot;: &quot;demo-asset:4&quot;,
+          &quot;name&quot;: &quot;弹窗纹理 2&quot;,
+          &quot;type&quot;: &quot;Prefab&quot;,
+          &quot;refCount&quot;: 2
+        },
+        {
+          &quot;id&quot;: &quot;demo-asset:5&quot;,
+          &quot;name&quot;: &quot;弹窗纹理 3&quot;,
+          &quot;type&quot;: &quot;Texture2D&quot;,
+          &quot;refCount&quot;: 2
+        },
+        {
+          &quot;id&quot;: &quot;demo-asset:6&quot;,
+          &quot;name&quot;: &quot;弹窗纹理 4&quot;,
+          &quot;type&quot;: &quot;Prefab&quot;,
+          &quot;refCount&quot;: 2
+        },
+        {
+          &quot;id&quot;: &quot;demo-asset:7&quot;,
+          &quot;name&quot;: &quot;弹窗纹理 5&quot;,
+          &quot;type&quot;: &quot;Texture2D&quot;,
+          &quot;refCount&quot;: 2
+        },
+        {
+          &quot;id&quot;: &quot;demo-asset:8&quot;,
+          &quot;name&quot;: &quot;弹窗纹理 6&quot;,
+          &quot;type&quot;: &quot;Prefab&quot;,
+          &quot;refCount&quot;: 2
+        }
+      ],
+      &quot;truncated&quot;: false
+    }
+  ],
+  &quot;resourceEvents&quot;: [
+    {
+      &quot;time&quot;: 10000,
+      &quot;operation&quot;: &quot;load&quot;,
+      &quot;key&quot;: &quot;演示 assets/popup/Popup.prefab&quot;,
+      &quot;type&quot;: &quot;Prefab&quot;,
+      &quot;durationMs&quot;: 620,
+      &quot;details&quot;: &quot;合成示例：首次加载偏慢，操作次数不等于分配次数&quot;
+    },
+    {
+      &quot;time&quot;: 20000,
+      &quot;operation&quot;: &quot;addRef&quot;,
+      &quot;key&quot;: &quot;demo-asset:3&quot;,
+      &quot;type&quot;: &quot;Texture2D&quot;,
+      &quot;refCount&quot;: 2,
+      &quot;stack&quot;: &quot;演示调用栈（合成）\n  at DemoPopup.onLoad (DemoPopup.ts:12)&quot;
+    },
+    {
+      &quot;time&quot;: 25000,
+      &quot;operation&quot;: &quot;error&quot;,
+      &quot;key&quot;: &quot;演示 assets/popup/MissingIcon&quot;,
+      &quot;durationMs&quot;: 14,
+      &quot;details&quot;: &quot;合成示例：模拟资源路径不存在&quot;
+    },
+    {
+      &quot;time&quot;: 30000,
+      &quot;operation&quot;: &quot;release&quot;,
+      &quot;key&quot;: &quot;演示 assets/popup/Popup.prefab&quot;,
+      &quot;details&quot;: &quot;合成示例：这是释放请求，不表示物理内存已回收&quot;
+    },
+    {
+      &quot;time&quot;: 40000,
+      &quot;operation&quot;: &quot;load&quot;,
+      &quot;key&quot;: &quot;演示 assets/popup/Popup.prefab&quot;,
+      &quot;type&quot;: &quot;Prefab&quot;,
+      &quot;durationMs&quot;: 810,
+      &quot;details&quot;: &quot;合成示例：模拟第二次慢加载&quot;
+    },
+    {
+      &quot;time&quot;: 41000,
+      &quot;operation&quot;: &quot;addRef&quot;,
+      &quot;key&quot;: &quot;demo-asset:5&quot;,
+      &quot;type&quot;: &quot;Texture2D&quot;,
+      &quot;refCount&quot;: 2
+    },
+    {
+      &quot;time&quot;: 50000,
+      &quot;operation&quot;: &quot;decRef&quot;,
+      &quot;key&quot;: &quot;demo-asset:3&quot;,
+      &quot;type&quot;: &quot;Texture2D&quot;,
+      &quot;refCount&quot;: 1
+    }
+  ],
+  &quot;capabilities&quot;: [
+    {
+      &quot;name&quot;: &quot;数据来源&quot;,
+      &quot;available&quot;: false,
+      &quot;detail&quot;: &quot;所有数值、对象、调用栈均为脚本构造的演示数据，不能用于评估真实项目性能。&quot;
+    },
+    {
+      &quot;name&quot;: &quot;JS 堆（演示）&quot;,
+      &quot;available&quot;: true,
+      &quot;detail&quot;: &quot;模拟 Chromium 堆指标持续增长，不代表实际堆分配。&quot;
+    },
+    {
+      &quot;name&quot;: &quot;Node / Component（演示）&quot;,
+      &quot;available&quot;: true,
+      &quot;detail&quot;: &quot;模拟同场景多轮生命周期的对象净增长。&quot;
+    },
+    {
+      &quot;name&quot;: &quot;Tween / 监听器（演示）&quot;,
+      &quot;available&quot;: true,
+      &quot;detail&quot;: &quot;模拟已销毁目标的遗留关联，供熟悉报告界面。&quot;
+    },
+    {
+      &quot;name&quot;: &quot;原生进程内存&quot;,
+      &quot;available&quot;: false,
+      &quot;detail&quot;: &quot;此演示与插件均不提供操作系统进程内存分析。&quot;
+    }
+  ],
+  &quot;findings&quot;: [
+    {
+      &quot;id&quot;: &quot;performance-low-fps&quot;,
+      &quot;category&quot;: &quot;performance&quot;,
+      &quot;severity&quot;: &quot;warning&quot;,
+      &quot;title&quot;: &quot;检测到持续低帧率&quot;,
+      &quot;evidence&quot;: &quot;20.0–60.0 秒的 41 个连续采样均低于 45 FPS，平均 36.0 FPS。&quot;,
+      &quot;suggestion&quot;: &quot;复现同一操作并检查 CPU 时间、Draw Call 和资源加载记录；后台页或主动限帧也可能降低 FPS。&quot;
+    },
+    {
+      &quot;id&quot;: &quot;performance-frame-spikes&quot;,
+      &quot;category&quot;: &quot;performance&quot;,
+      &quot;severity&quot;: &quot;warning&quot;,
+      &quot;title&quot;: &quot;检测到长帧&quot;,
+      &quot;evidence&quot;: &quot;6 个采样区间出现至少 50 ms 的长帧，最长 110.0 ms；记录到 12 个慢帧。&quot;,
+      &quot;suggestion&quot;: &quot;对照长帧时间点复现资源加载、实例化、布局或大量销毁操作。启动、切场景与后台恢复产生的长帧需要单独判断。&quot;
+    },
+    {
+      &quot;id&quot;: &quot;memory-sustained-growth&quot;,
+      &quot;category&quot;: &quot;memory&quot;,
+      &quot;severity&quot;: &quot;warning&quot;,
+      &quot;title&quot;: &quot;JS 堆内存持续增长嫌疑&quot;,
+      &quot;evidence&quot;: &quot;最近 30 个有效采样覆盖 29.0 秒，四段中位数持续上升，首尾增加 12.0 MiB，线性趋势 33.0 MiB/分钟。&quot;,
+      &quot;suggestion&quot;: &quot;在相同场景反复进入/退出同一功能，静置后再次比较快照，并使用浏览器 Heap Snapshot 检查保留路径。缓存预热与 GC 时机也会造成增长；此结果不能证明内存泄漏。&quot;
+    },
+    {
+      &quot;id&quot;: &quot;object-snapshot-growth&quot;,
+      &quot;category&quot;: &quot;object&quot;,
+      &quot;severity&quot;: &quot;info&quot;,
+      &quot;title&quot;: &quot;同场景快照对象数量净增长&quot;,
+      &quot;evidence&quot;: &quot;“演示：稳定基线” → “演示：第 3 轮返回大厅”：Node +12，Component +12，Tween +1，监听器 +3。&quot;,
+      &quot;suggestion&quot;: &quot;确认两次快照位于相同业务状态、完成销毁与异步回调后采集。重复相同生命周期仍持续增长时，按对象 ID、节点路径和注册堆栈排查；单次增长可能是正常业务。&quot;,
+      &quot;objectIds&quot;: [
+        &quot;demo-node:5&quot;,
+        &quot;demo-component:5&quot;,
+        &quot;demo-node:6&quot;,
+        &quot;demo-component:6&quot;,
+        &quot;demo-node:7&quot;,
+        &quot;demo-component:7&quot;,
+        &quot;demo-node:8&quot;,
+        &quot;demo-component:8&quot;,
+        &quot;demo-node:9&quot;,
+        &quot;demo-component:9&quot;,
+        &quot;demo-node:10&quot;,
+        &quot;demo-component:10&quot;,
+        &quot;demo-node:11&quot;,
+        &quot;demo-component:11&quot;,
+        &quot;demo-node:12&quot;,
+        &quot;demo-component:12&quot;,
+        &quot;demo-node:13&quot;,
+        &quot;demo-component:13&quot;,
+        &quot;demo-node:14&quot;,
+        &quot;demo-component:14&quot;,
+        &quot;demo-node:15&quot;,
+        &quot;demo-component:15&quot;,
+        &quot;demo-node:16&quot;,
+        &quot;demo-component:16&quot;,
+        &quot;demo-tween:1&quot;,
+        &quot;demo-listener:3&quot;,
+        &quot;demo-listener:4&quot;,
+        &quot;demo-listener:5&quot;
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;resource-cache-growth&quot;,
+      &quot;category&quot;: &quot;resource&quot;,
+      &quot;severity&quot;: &quot;info&quot;,
+      &quot;title&quot;: &quot;资源缓存增长且仍有引用&quot;,
+      &quot;evidence&quot;: &quot;相同场景资源数净增 6，3 个跨快照缓存资源的 refCount &gt; 0。&quot;,
+      &quot;suggestion&quot;: &quot;对照资源 UUID、addRef/decRef 与 release 请求检查持有者。缓存存在或 refCount &gt; 0 本身不代表泄漏，release 请求也不等于物理内存立即释放。&quot;,
+      &quot;objectIds&quot;: [
+        &quot;demo-asset:0&quot;,
+        &quot;demo-asset:1&quot;,
+        &quot;demo-asset:2&quot;
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;object-destroyed-target&quot;,
+      &quot;category&quot;: &quot;object&quot;,
+      &quot;severity&quot;: &quot;warning&quot;,
+      &quot;title&quot;: &quot;已销毁目标仍有关联记录&quot;,
+      &quot;evidence&quot;: &quot;最近快照发现 4 个关联已销毁目标的 Tween 或监听器记录。示例：DemoLobby/Canvas/ClosedPopup；DemoLobby/ClosedPopup1；DemoLobby/ClosedPopup2。&quot;,
+      &quot;suggestion&quot;: &quot;检查 onDestroy 中的事件解绑、Tween.stop/stopAllByTarget 和跨场景对象持有。该记录表示采集器观察到的关联，需要结合注册堆栈与业务生命周期确认。&quot;,
+      &quot;objectIds&quot;: [
+        &quot;demo-tween:1&quot;,
+        &quot;demo-listener:3&quot;,
+        &quot;demo-listener:4&quot;,
+        &quot;demo-listener:5&quot;
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;object-long-lived-handles&quot;,
+      &quot;category&quot;: &quot;object&quot;,
+      &quot;severity&quot;: &quot;info&quot;,
+      &quot;title&quot;: &quot;存在长期活动的 Tween / 监听器&quot;,
+      &quot;evidence&quot;: &quot;4 个活动记录已超过 30.0 秒。长期运行的动画和全局事件可能是正常行为。&quot;,
+      &quot;suggestion&quot;: &quot;优先检查临时界面注册的监听器和循环 Tween；全局系统或常驻节点的长期记录可作为正常基线。&quot;,
+      &quot;objectIds&quot;: [
+        &quot;demo-tween:0&quot;,
+        &quot;demo-listener:0&quot;,
+        &quot;demo-listener:1&quot;,
+        &quot;demo-listener:2&quot;
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;resource-load-errors&quot;,
+      &quot;category&quot;: &quot;resource&quot;,
+      &quot;severity&quot;: &quot;warning&quot;,
+      &quot;title&quot;: &quot;资源加载错误&quot;,
+      &quot;evidence&quot;: &quot;捕获 1 次加载错误。示例：演示 assets/popup/MissingIcon。&quot;,
+      &quot;suggestion&quot;: &quot;检查路径、Bundle 生命周期和回调错误；查看事件详情及可选调用堆栈。&quot;
+    },
+    {
+      &quot;id&quot;: &quot;resource-slow-loads&quot;,
+      &quot;category&quot;: &quot;resource&quot;,
+      &quot;severity&quot;: &quot;info&quot;,
+      &quot;title&quot;: &quot;资源加载耗时较高&quot;,
+      &quot;evidence&quot;: &quot;2 次加载调用耗时至少 500 ms；最长 810.0 ms。&quot;,
+      &quot;suggestion&quot;: &quot;区分网络下载、缓存命中与解析/实例化耗时。可按资源标识定位调用栈；加载回调耗时不是 GPU 或物理内存分配量。&quot;
+    }
+  ],
+  &quot;dropped&quot;: {
+    &quot;samples&quot;: 0,
+    &quot;events&quot;: 0,
+    &quot;objects&quot;: 0,
+    &quot;snapshots&quot;: 0
+  }
+}</pre></details></section><div class="footer">性能监控与内存分析插件 · 独立离线报告 · 无外部资源依赖</div></main></body></html>

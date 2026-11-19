@@ -1,0 +1,23 @@
+{
+  "fixtureReportBytes": 7003064,
+  "initialSync": {
+    "packets": 104,
+    "bytes": 7315734
+  },
+  "steadyReplay": {
+    "polls": 100,
+    "newSamples": 300,
+    "newEvents": 2000,
+    "snapshotDetailRecordsResent": 0,
+    "oldFullReportBytes": 705253900,
+    "incrementalBytes": 730700,
+    "averageIncrementalPacketBytes": 7307,
+    "byteReductionPercent": 99.89639192353279
+  },
+  "maxPacketBytes": 198577,
+  "panel": {
+    "firstTrendSummaryBytes": 90853,
+    "unchangedPollBytes": 280
+  },
+  "integrity": "all retained samples/events/snapshots/dropped counters match"
+}

@@ -1,0 +1,45 @@
+{
+  "name": "cocos-performance-inspector",
+  "package_version": 2,
+  "version": "1.2.0",
+  "description": "性能监控与内存分析插件：帧率、内存趋势、资源与对象生命周期分析",
+  "author": "CocosPerformanceInspector",
+  "license": "MIT",
+  "editor": ">=3.8.0 <3.9.0",
+  "main": "./dist/src/main.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json && node scripts/build-runtime.cjs",
+    "test": "npm run build && node --test tests/*.test.cjs",
+    "package": "npm run build && node scripts/package.cjs",
+    "demo": "npm run build && node scripts/demo.cjs",
+    "check:runtime": "node scripts/check-runtime.cjs"
+  },
+  "devDependencies": { "@types/node": "^18.19.0", "typescript": "~5.4.5" },
+  "panels": {
+    "default": {
+      "title": "性能监控与内存分析", "type": "dockable", "main": "./dist/src/panels/default",
+      "size": { "min-width": 760, "min-height": 560, "width": 1160, "height": 820 },
+      "flags": { "resizable": true }
+    }
+  },
+  "contributions": {
+    "server": "./dist/src/editor/preview.js",
+    "preview": {
+      "browser": { "methods": "./dist/src/editor/preview.js", "hooks": { "settings": "onSettingsBrowser" } }
+    },
+    "menu": [{ "path": "i18n:menu.extension", "label": "性能监控与内存分析", "message": "open-panel" }],
+    "messages": {
+      "open-panel": { "methods": ["openPanel"] },
+      "get-state": { "methods": ["getState"] },
+      "get-snapshot": { "methods": ["getSnapshot"] },
+      "get-resource-events": { "methods": ["getResourceEvents"] },
+      "select-session": { "methods": ["selectSession"] },
+      "take-snapshot": { "methods": ["takeSnapshot"] },
+      "get-preview-config": { "methods": ["getPreviewConfig"] },
+      "configure-capture": { "methods": ["configureCapture"] },
+      "export-report": { "methods": ["exportReport"] },
+      "import-report": { "methods": ["importReport"] },
+      "clear-session": { "methods": ["clearSession"] }
+    }
+  }
+}

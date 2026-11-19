@@ -1,0 +1,186 @@
+﻿[
+    {
+        "Source":  "D:\\CocosPerformanceInspector\\.work\\cocos-resource-inspector\\package.json",
+        "Target":  "D:\\util\\cocos-resource-inspector\\package.json"
+    },
+    {
+        "Source":  "D:\\CocosPerformanceInspector\\.work\\cocos-resource-inspector\\main.js",
+        "Target":  "D:\\util\\cocos-resource-inspector\\main.js"
+    },
+    {
+        "Source":  "D:\\CocosPerformanceInspector\\.work\\cocos-resource-inspector\\README.md",
+        "Target":  "D:\\util\\cocos-resource-inspector\\README.md"
+    },
+    {
+        "Source":  "D:\\CocosPerformanceInspector\\.work\\cocos-resource-inspector\\lib\\core.js",
+        "Target":  "D:\\util\\cocos-resource-inspector\\lib\\core.js"
+    },
+    {
+        "Source":  "D:\\CocosPerformanceInspector\\.work\\cocos-resource-inspector\\lib\\size.js",
+        "Target":  "D:\\util\\cocos-resource-inspector\\lib\\size.js"
+    },
+    {
+        "Source":  "D:\\CocosPerformanceInspector\\.work\\cocos-resource-inspector\\lib\\model.js",
+        "Target":  "D:\\util\\cocos-resource-inspector\\lib\\model.js"
+    },
+    {
+        "Source":  "D:\\CocosPerformanceInspector\\.work\\cocos-resource-inspector\\lib\\report.js",
+        "Target":  "D:\\util\\cocos-resource-inspector\\lib\\report.js"
+    },
+    {
+        "Source":  "D:\\CocosPerformanceInspector\\.work\\cocos-resource-inspector\\panels\\default\\index.js",
+        "Target":  "D:\\util\\cocos-resource-inspector\\panels\\default\\index.js"
+    },
+    {
+        "Source":  "D:\\CocosPerformanceInspector\\.work\\cocos-resource-inspector\\static\\panel.html",
+        "Target":  "D:\\util\\cocos-resource-inspector\\static\\panel.html"
+    },
+    {
+        "Source":  "D:\\CocosPerformanceInspector\\.work\\cocos-resource-inspector\\static\\panel.css",
+        "Target":  "D:\\util\\cocos-resource-inspector\\static\\panel.css"
+    },
+    {
+        "Source":  "D:\\CocosPerformanceInspector\\.work\\cocos-resource-inspector\\tests\\size.test.cjs",
+        "Target":  "D:\\util\\cocos-resource-inspector\\tests\\size.test.cjs"
+    },
+    {
+        "Source":  "D:\\CocosPerformanceInspector\\.work\\cocos-resource-inspector\\tests\\model-report.test.cjs",
+        "Target":  "D:\\util\\cocos-resource-inspector\\tests\\model-report.test.cjs"
+    },
+    {
+        "Source":  "D:\\CocosPerformanceInspector\\.work\\cocos-resource-inspector\\tests\\main.test.cjs",
+        "Target":  "D:\\util\\cocos-resource-inspector\\tests\\main.test.cjs"
+    },
+    {
+        "Source":  "D:\\CocosPerformanceInspector\\.work\\cocos-resource-inspector\\tests\\panel.test.cjs",
+        "Target":  "D:\\util\\cocos-resource-inspector\\tests\\panel.test.cjs"
+    },
+    {
+        "Source":  "D:\\CocosPerformanceInspector\\.work\\cocos-resource-inspector\\scripts\\editor-smoke.cjs",
+        "Target":  "D:\\util\\cocos-resource-inspector\\scripts\\editor-smoke.cjs"
+    },
+    {
+        "Source":  "D:\\CocosPerformanceInspector\\.work\\cocos-resource-inspector\\dist\\cocos-resource-inspector\\main.js",
+        "Target":  "D:\\util\\cocos-resource-inspector\\dist\\cocos-resource-inspector\\main.js"
+    },
+    {
+        "Source":  "D:\\CocosPerformanceInspector\\.work\\cocos-resource-inspector\\dist\\cocos-resource-inspector\\main.js",
+        "Target":  "D:\\util\\cocos-resource-inspector\\release\\cocos-resource-inspector\\main.js"
+    },
+    {
+        "Source":  "D:\\CocosPerformanceInspector\\.work\\cocos-resource-inspector\\dist\\cocos-resource-inspector\\main.js",
+        "Target":  "D:\\sinonetWorkspaecs\\3D\\BathalaBless\\extensions\\cocos-resource-inspector\\main.js"
+    },
+    {
+        "Source":  "D:\\CocosPerformanceInspector\\.work\\cocos-resource-inspector\\dist\\cocos-resource-inspector\\package.json",
+        "Target":  "D:\\util\\cocos-resource-inspector\\dist\\cocos-resource-inspector\\package.json"
+    },
+    {
+        "Source":  "D:\\CocosPerformanceInspector\\.work\\cocos-resource-inspector\\dist\\cocos-resource-inspector\\package.json",
+        "Target":  "D:\\util\\cocos-resource-inspector\\release\\cocos-resource-inspector\\package.json"
+    },
+    {
+        "Source":  "D:\\CocosPerformanceInspector\\.work\\cocos-resource-inspector\\dist\\cocos-resource-inspector\\package.json",
+        "Target":  "D:\\sinonetWorkspaecs\\3D\\BathalaBless\\extensions\\cocos-resource-inspector\\package.json"
+    },
+    {
+        "Source":  "D:\\CocosPerformanceInspector\\.work\\cocos-resource-inspector\\dist\\cocos-resource-inspector\\README.md",
+        "Target":  "D:\\util\\cocos-resource-inspector\\dist\\cocos-resource-inspector\\README.md"
+    },
+    {
+        "Source":  "D:\\CocosPerformanceInspector\\.work\\cocos-resource-inspector\\dist\\cocos-resource-inspector\\README.md",
+        "Target":  "D:\\util\\cocos-resource-inspector\\release\\cocos-resource-inspector\\README.md"
+    },
+    {
+        "Source":  "D:\\CocosPerformanceInspector\\.work\\cocos-resource-inspector\\dist\\cocos-resource-inspector\\README.md",
+        "Target":  "D:\\sinonetWorkspaecs\\3D\\BathalaBless\\extensions\\cocos-resource-inspector\\README.md"
+    },
+    {
+        "Source":  "D:\\CocosPerformanceInspector\\.work\\cocos-resource-inspector\\dist\\cocos-resource-inspector\\lib\\core.js",
+        "Target":  "D:\\util\\cocos-resource-inspector\\dist\\cocos-resource-inspector\\lib\\core.js"
+    },
+    {
+        "Source":  "D:\\CocosPerformanceInspector\\.work\\cocos-resource-inspector\\dist\\cocos-resource-inspector\\lib\\core.js",
+        "Target":  "D:\\util\\cocos-resource-inspector\\release\\cocos-resource-inspector\\lib\\core.js"
+    },
+    {
+        "Source":  "D:\\CocosPerformanceInspector\\.work\\cocos-resource-inspector\\dist\\cocos-resource-inspector\\lib\\core.js",
+        "Target":  "D:\\sinonetWorkspaecs\\3D\\BathalaBless\\extensions\\cocos-resource-inspector\\lib\\core.js"
+    },
+    {
+        "Source":  "D:\\CocosPerformanceInspector\\.work\\cocos-resource-inspector\\dist\\cocos-resource-inspector\\lib\\model.js",
+        "Target":  "D:\\util\\cocos-resource-inspector\\dist\\cocos-resource-inspector\\lib\\model.js"
+    },
+    {
+        "Source":  "D:\\CocosPerformanceInspector\\.work\\cocos-resource-inspector\\dist\\cocos-resource-inspector\\lib\\model.js",
+        "Target":  "D:\\util\\cocos-resource-inspector\\release\\cocos-resource-inspector\\lib\\model.js"
+    },
+    {
+        "Source":  "D:\\CocosPerformanceInspector\\.work\\cocos-resource-inspector\\dist\\cocos-resource-inspector\\lib\\model.js",
+        "Target":  "D:\\sinonetWorkspaecs\\3D\\BathalaBless\\extensions\\cocos-resource-inspector\\lib\\model.js"
+    },
+    {
+        "Source":  "D:\\CocosPerformanceInspector\\.work\\cocos-resource-inspector\\dist\\cocos-resource-inspector\\lib\\report.js",
+        "Target":  "D:\\util\\cocos-resource-inspector\\dist\\cocos-resource-inspector\\lib\\report.js"
+    },
+    {
+        "Source":  "D:\\CocosPerformanceInspector\\.work\\cocos-resource-inspector\\dist\\cocos-resource-inspector\\lib\\report.js",
+        "Target":  "D:\\util\\cocos-resource-inspector\\release\\cocos-resource-inspector\\lib\\report.js"
+    },
+    {
+        "Source":  "D:\\CocosPerformanceInspector\\.work\\cocos-resource-inspector\\dist\\cocos-resource-inspector\\lib\\report.js",
+        "Target":  "D:\\sinonetWorkspaecs\\3D\\BathalaBless\\extensions\\cocos-resource-inspector\\lib\\report.js"
+    },
+    {
+        "Source":  "D:\\CocosPerformanceInspector\\.work\\cocos-resource-inspector\\dist\\cocos-resource-inspector\\lib\\size.js",
+        "Target":  "D:\\util\\cocos-resource-inspector\\dist\\cocos-resource-inspector\\lib\\size.js"
+    },
+    {
+        "Source":  "D:\\CocosPerformanceInspector\\.work\\cocos-resource-inspector\\dist\\cocos-resource-inspector\\lib\\size.js",
+        "Target":  "D:\\util\\cocos-resource-inspector\\release\\cocos-resource-inspector\\lib\\size.js"
+    },
+    {
+        "Source":  "D:\\CocosPerformanceInspector\\.work\\cocos-resource-inspector\\dist\\cocos-resource-inspector\\lib\\size.js",
+        "Target":  "D:\\sinonetWorkspaecs\\3D\\BathalaBless\\extensions\\cocos-resource-inspector\\lib\\size.js"
+    },
+    {
+        "Source":  "D:\\CocosPerformanceInspector\\.work\\cocos-resource-inspector\\dist\\cocos-resource-inspector\\panels\\default\\index.js",
+        "Target":  "D:\\util\\cocos-resource-inspector\\dist\\cocos-resource-inspector\\panels\\default\\index.js"
+    },
+    {
+        "Source":  "D:\\CocosPerformanceInspector\\.work\\cocos-resource-inspector\\dist\\cocos-resource-inspector\\panels\\default\\index.js",
+        "Target":  "D:\\util\\cocos-resource-inspector\\release\\cocos-resource-inspector\\panels\\default\\index.js"
+    },
+    {
+        "Source":  "D:\\CocosPerformanceInspector\\.work\\cocos-resource-inspector\\dist\\cocos-resource-inspector\\panels\\default\\index.js",
+        "Target":  "D:\\sinonetWorkspaecs\\3D\\BathalaBless\\extensions\\cocos-resource-inspector\\panels\\default\\index.js"
+    },
+    {
+        "Source":  "D:\\CocosPerformanceInspector\\.work\\cocos-resource-inspector\\dist\\cocos-resource-inspector\\static\\panel.css",
+        "Target":  "D:\\util\\cocos-resource-inspector\\dist\\cocos-resource-inspector\\static\\panel.css"
+    },
+    {
+        "Source":  "D:\\CocosPerformanceInspector\\.work\\cocos-resource-inspector\\dist\\cocos-resource-inspector\\static\\panel.css",
+        "Target":  "D:\\util\\cocos-resource-inspector\\release\\cocos-resource-inspector\\static\\panel.css"
+    },
+    {
+        "Source":  "D:\\CocosPerformanceInspector\\.work\\cocos-resource-inspector\\dist\\cocos-resource-inspector\\static\\panel.css",
+        "Target":  "D:\\sinonetWorkspaecs\\3D\\BathalaBless\\extensions\\cocos-resource-inspector\\static\\panel.css"
+    },
+    {
+        "Source":  "D:\\CocosPerformanceInspector\\.work\\cocos-resource-inspector\\dist\\cocos-resource-inspector\\static\\panel.html",
+        "Target":  "D:\\util\\cocos-resource-inspector\\dist\\cocos-resource-inspector\\static\\panel.html"
+    },
+    {
+        "Source":  "D:\\CocosPerformanceInspector\\.work\\cocos-resource-inspector\\dist\\cocos-resource-inspector\\static\\panel.html",
+        "Target":  "D:\\util\\cocos-resource-inspector\\release\\cocos-resource-inspector\\static\\panel.html"
+    },
+    {
+        "Source":  "D:\\CocosPerformanceInspector\\.work\\cocos-resource-inspector\\dist\\cocos-resource-inspector\\static\\panel.html",
+        "Target":  "D:\\sinonetWorkspaecs\\3D\\BathalaBless\\extensions\\cocos-resource-inspector\\static\\panel.html"
+    },
+    {
+        "Source":  "D:\\CocosPerformanceInspector\\.work\\cocos-resource-inspector\\release\\cocos-resource-inspector.zip",
+        "Target":  "D:\\util\\cocos-resource-inspector\\release\\cocos-resource-inspector.zip"
+    }
+]

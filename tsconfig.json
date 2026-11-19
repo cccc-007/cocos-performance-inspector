@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "target": "ES2020", "module": "CommonJS", "moduleResolution": "node",
+    "lib": ["ES2021", "DOM", "DOM.Iterable"], "strict": true, "esModuleInterop": true,
+    "rootDir": ".", "outDir": "dist", "types": ["node"],
+    "skipLibCheck": true, "forceConsistentCasingInFileNames": true,
+    "sourceMap": true, "declaration": true
+  },
+  "include": ["src/**/*.ts"], "exclude": ["node_modules", "dist", "runtime", "release"]
+}
